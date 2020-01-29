@@ -14,7 +14,7 @@
       </div>
       <div class="tab-content">
         <div>
-          Content
+          {{activeTab + ' is selected'}}
         </div>
       </div>
     </div>
@@ -27,7 +27,7 @@ export default {
   data () {
     return {
       tabs: ["layer-options", "map-options", "filter-options"],
-      activeTab: "layers"
+      activeTab: "layer-options"
     }
   }
 }
@@ -66,11 +66,11 @@ export default {
     display: flex;
     flex: 0 0 auto;
   }
-  /* .tab-container::before, .tab-container::after {
+  .tab-container::before, .tab-container::after {
     content: "";
-    width: .5em;
+    width: 1em;
     border-bottom: 1px solid #ccc;
-  } */
+  }
   .tab {
     flex: 1 1 auto;
     border: 1px solid #ccc;
