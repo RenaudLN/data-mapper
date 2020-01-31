@@ -8,9 +8,16 @@
     @update:bounds="boundsUpdated"
   >
     <l-tile-layer :url="url" />
-    <l-circle-marker :lat-lng="center">
-      <l-tooltip direction="bottom">Hey</l-tooltip>
-    </l-circle-marker>
+    <template v-for="(l, i) in layers">
+      <l-circle-marker
+        v-for="(p, index) in getPoints(l.dataset)"
+        :key="i + '.' + index"
+        v-bind="l.options"
+        :lat-lng="p"
+      >
+        <l-tooltip>{{'Point ' + index}}</l-tooltip>
+      </l-circle-marker>
+    </template>
   </l-map>
 </template>
 
@@ -33,11 +40,27 @@
     data () {
       return {
         url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-        zoom: 3,
-        center: [47.413220, -1.219482],
+        zoom: 8,
+        center: [47.413220, 1],
         markerLatLng: [47.413220, -1.219482],
-        bounds: null
+        bounds: null,
+        sampleData: {
+          lat: [47, 47.1, 47.2, 47.3],
+          lon: [1, 1.1, 1.2, 1.3],
+        }
       };
+    },
+    computed: {
+      samplePoints: function () {
+        let points = [];
+        for (let i = 0; i < this.sampleData.lat.length; i++) {
+          points[i] = [this.sampleData.lat[i], this.sampleData.lon[i]]
+        }
+        return points
+      },
+      layers: function() {
+        return this.$store.state.layers
+      }
     },
     methods: {
       zoomUpdated (zoom) {
@@ -48,6 +71,9 @@
       },
       boundsUpdated (bounds) {
         this.bounds = bounds;
+      },
+      getPoints(dataset) {
+        return this.$store.getters.points(dataset)
       }
     }
   }

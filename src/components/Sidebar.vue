@@ -1,6 +1,6 @@
 <template>
   <div id="sidebar">
-    <div id="title">Map Maker</div>
+    <div id="title">Data Mapper</div>
     <div id="tabs">
       <div class="tab-container">
         <div
@@ -13,21 +13,24 @@
         </div>
       </div>
       <div class="tab-content">
-        <div>
-          {{activeTab + ' is selected'}}
-        </div>
+        <scatter-options />
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import ScatterOptions from "./ScatterOptions.vue"
+
 export default {
   name: "Sidebar",
+  components: {
+    ScatterOptions
+  },
   data () {
     return {
       tabs: ["layer-options", "map-options", "filter-options"],
-      activeTab: "layer-options"
+      activeTab: "layer-options",
     }
   }
 }
@@ -68,7 +71,7 @@ export default {
   }
   .tab-container::before, .tab-container::after {
     content: "";
-    width: 1em;
+    width: 0.5em;
     border-bottom: 1px solid #ccc;
   }
   .tab {
@@ -77,15 +80,16 @@ export default {
     padding: .25em;
     text-align: center;
     cursor: pointer;
-    background-color: #f0f0f0;
+    background-color: #fafafa;
   }
   .tab.active {
     border-bottom: none;
-    background-color: #fafafa;
+    background-color: #fff;
   }
   .tab-content {
     padding: 0.5em;
     overflow: auto;
     flex: 1 1 auto;
+    background-color: #fff;
   }
 </style>
