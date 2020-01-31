@@ -13,19 +13,19 @@
         </div>
       </div>
       <div class="tab-content">
-        <scatter-options />
+        <layer-options />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import ScatterOptions from "./ScatterOptions.vue"
+import LayerOptions from "./LayerOptions.vue"
 
 export default {
   name: "Sidebar",
   components: {
-    ScatterOptions
+    LayerOptions
   },
   data () {
     return {

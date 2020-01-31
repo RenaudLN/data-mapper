@@ -44,20 +44,9 @@
         center: [47.413220, 1],
         markerLatLng: [47.413220, -1.219482],
         bounds: null,
-        sampleData: {
-          lat: [47, 47.1, 47.2, 47.3],
-          lon: [1, 1.1, 1.2, 1.3],
-        }
       };
     },
     computed: {
-      samplePoints: function () {
-        let points = [];
-        for (let i = 0; i < this.sampleData.lat.length; i++) {
-          points[i] = [this.sampleData.lat[i], this.sampleData.lon[i]]
-        }
-        return points
-      },
       layers: function() {
         return this.$store.state.layers
       }
