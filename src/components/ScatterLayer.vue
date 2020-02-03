@@ -35,6 +35,7 @@
       cRadius: function() {
         const p = this.getPoints()
         const r = this.layer.radius
+        window.console.log(r)
         const l = this.layer
         if (l.radiusBase) {
           const d = this.$store.state.datasets[l.dataset]

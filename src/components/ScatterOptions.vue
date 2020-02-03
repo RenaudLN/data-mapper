@@ -83,6 +83,9 @@ export default {
         return this.$store.state.layers[this.indexLayer].radius
       },
       set: function(radius) {
+        if (typeof(radius) === "number") {
+          radius = [radius]
+        }
         this.$store.commit("setScatterRadius", {indexLayer: this.indexLayer, radius: radius})
       }
     },
@@ -137,12 +140,13 @@ export default {
   },
   methods: {
     handleRadiusBase: function (event) {
+      window.console.log(this.radius)
       this.showRadiusBase = event
       if (event) {
         this.radius = [0, Math.max(...this.radius)]
       } else {
-        this.radiusBase = null
         this.radius = [Math.max(...this.radius)]
+        this.radiusBase = null
       }
     },
   }
