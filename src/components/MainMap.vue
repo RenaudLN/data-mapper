@@ -8,25 +8,17 @@
     @update:bounds="boundsUpdated"
   >
     <l-tile-layer :url="url" />
-    <template v-for="(l, i) in layers">
-      <l-circle-marker
-        v-for="(p, index) in getPoints(i)"
-        :key="i + '.' + index"
-        v-bind="l.options"
-        :lat-lng="p"
-      >
-        <l-tooltip>{{'Point ' + index}}</l-tooltip>
-      </l-circle-marker>
-    </template>
+    <div :is="l.type + '-layer'" :layer="l" v-for="(l, i) in layers" :key="i" />
   </l-map>
 </template>
 
 <script>
   import {LMap,
     LTileLayer,
-    LCircleMarker,
-    LTooltip,
+    // LCircleMarker,
+    // LTooltip,
   } from 'vue2-leaflet'
+  import ScatterLayer from './ScatterLayer.vue'
   import 'leaflet/dist/leaflet.css'
 
   export default {
@@ -34,8 +26,7 @@
     components: {
       LMap,
       LTileLayer,
-      LCircleMarker,
-      LTooltip,
+      ScatterLayer
     },
     data () {
       return {
@@ -61,21 +52,6 @@
       boundsUpdated (bounds) {
         this.bounds = bounds;
       },
-      getPoints(indexLayer) {
-        const l = this.$store.state.layers[indexLayer]
-        if (!l.dataset || !l.latField || !l.lngField) {
-          return []
-        }
-        const d = this.$store.state.datasets[l.dataset]
-        if (!d[l.latField] || !d[l.lngField]) {
-          return []
-        }
-        let points = [];
-        for (let i = 0; i < d[l.latField].length; i++) {
-          points.push([d[l.latField][i], d[l.lngField][i]])
-        }
-        return points
-      }
     }
   }
 </script>

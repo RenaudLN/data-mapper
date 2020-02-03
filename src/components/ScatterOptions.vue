@@ -1,29 +1,36 @@
 <template>
   <div id="scatter-options">
     <span class="form-label">Latitude*</span>
-    <cool-select :items="fields" v-model="latField" item-value="name" item-text="name"/>
+    <cool-select :items="fields" v-model="latField" item-value="name" item-text="name" placeholder="Select one..." />
 
     <span class="form-label">Longitude*</span>
-    <cool-select :items="fields" v-model="lngField" item-value="name" item-text="name"/>
+    <cool-select :items="fields" v-model="lngField" item-value="name" item-text="name" placeholder="Select one..."/>
 
     <span class="form-label">Radius</span>
-    <vue-slider :min="1" :max="100" v-model="options.radius" @change="updateRadius" :lazy="true" />
+    <switcher @switch="handleRadiusBase" />
+    <vue-slider :min="0" :max="100" v-model="radius" :lazy="true" />
+
+    <template v-if="showRadiusBase">
+      <span class="form-label">Radius Based On</span>
+      <cool-select :items="fields" v-model="radiusBase" item-value="name" item-text="name" placeholder="Select one..."/>
+    </template>
 
     <span class="form-label">Fill Color</span>
-    <color-picker :name="'fillColorPicker' + indexLayer" :value="options.fillColor" @pick-color="updateFillColor" />
+    <switcher />
+    <color-picker :name="'fillColorPicker' + indexLayer" :value="fillColor" @pick-color="fillColor = $event" />
 
     <span class="form-label">Fill Opacity</span>
-    <vue-slider :min="0" :max="1" :interval="0.1" v-model="options.fillOpacity" @change="updateFillOpacity" :lazy="true" />
+    <vue-slider :min="0" :max="1" :interval="0.1" v-model="fillOpacity" :lazy="true" />
 
     <span class="form-label">Outline Width</span>
-    <vue-slider :min="0" :max="20" v-model="options.weight" @change="updateWeight" :lazy="true" />
+    <vue-slider :min="0" :max="20" v-model="weight" :lazy="true" />
 
-    <template v-if="options.weight > 0">
+    <template v-if="weight > 0">
       <span class="form-label">Outline Color</span>
-      <color-picker :name="'colorPicker' + indexLayer" :value="options.color" @pick-color="updateColor" />
+      <color-picker :name="'colorPicker' + indexLayer" :value="color" @pick-color="color = $event" />
 
       <span class="form-label">Outline Opacity</span>
-      <vue-slider :min="0" :max="1" :interval="0.1" v-model="options.opacity" @change="updateOpacity" :lazy="true" />
+      <vue-slider :min="0" :max="1" :interval="0.1" v-model="opacity" :lazy="true" />
     </template>
   </div>
 </template>
@@ -32,15 +39,22 @@
 import VueSlider from 'vue-slider-component'
 import { CoolSelect } from 'vue-cool-select'
 import ColorPicker from './ColorPicker.vue'
+import Switcher from './Switcher.vue'
 
 export default {
   name: "ScatterOptions",
   components: {
     VueSlider,
     CoolSelect,
-    ColorPicker
+    ColorPicker,
+    Switcher,
   },
   props: ["indexLayer"],
+  data() {
+    return {
+      showRadiusBase: false
+    }
+  },
   computed: {    
     fields: function() {
       const dn = this.$store.state.layers[this.indexLayer].dataset
@@ -64,31 +78,72 @@ export default {
         this.$store.commit("setLngField", {indexLayer: this.indexLayer, lngField: lngField})
       }
     },
-    options: function() {
-      return this.$store.state.layers[this.indexLayer].options
+    radius: {
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].radius
+      },
+      set: function(radius) {
+        this.$store.commit("setScatterRadius", {indexLayer: this.indexLayer, radius: radius})
+      }
+    },
+    radiusBase: {
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].radiusBase
+      },
+      set: function(radiusBase) {
+        this.$store.commit("setScatterRadiusBase", {indexLayer: this.indexLayer, radiusBase: radiusBase})
+      }
+    },
+    weight: {
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].weight
+      },
+      set: function(weight) {
+        this.$store.commit("setScatterWeight", {indexLayer: this.indexLayer, weight: weight})
+      }
+    },
+    opacity: {
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].opacity
+      },
+      set: function(opacity) {
+        this.$store.commit("setScatterOpacity", {indexLayer: this.indexLayer, opacity: opacity})
+      }
+    },
+    fillOpacity: {
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].fillOpacity
+      },
+      set: function(fillOpacity) {
+        this.$store.commit("setScatterFillOpacity", {indexLayer: this.indexLayer, fillOpacity: fillOpacity})
+      }
+    },
+    fillColor: {
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].fillColor
+      },
+      set: function(fillColor) {
+        this.$store.commit("setScatterFillColor", {indexLayer: this.indexLayer, fillColor: fillColor.hex})
+      }
+    },
+    color: {
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].color
+      },
+      set: function(color) {
+        this.$store.commit("setScatterColor", {indexLayer: this.indexLayer, color: color.hex})
+      }
     },
   },
   methods: {
-    showModal: function(name) {
-      this.$modal.show(name);
-    },
-    updateRadius: function (radius) {
-      this.$store.commit("setScatterRadius", {indexLayer: this.indexLayer, radius: radius})
-    },
-    updateWeight: function (weight) {
-      this.$store.commit("setScatterWeight", {indexLayer: this.indexLayer, weight: weight})
-    },
-    updateOpacity: function (opacity) {
-      this.$store.commit("setScatterOpacity", {indexLayer: this.indexLayer, opacity: opacity})
-    },
-    updateFillOpacity: function (fillOpacity) {
-      this.$store.commit("setScatterFillOpacity", {indexLayer: this.indexLayer, fillOpacity: fillOpacity})
-    },
-    updateFillColor: function (fillColor) {
-      this.$store.commit("setScatterFillColor", {indexLayer: this.indexLayer, fillColor: fillColor.hex})
-    },
-    updateColor: function (color) {
-      this.$store.commit("setScatterColor", {indexLayer: this.indexLayer, color: color.hex})
+    handleRadiusBase: function (event) {
+      this.showRadiusBase = event
+      if (event) {
+        this.radius = [0, Math.max(...this.radius)]
+      } else {
+        this.radiusBase = null
+        this.radius = [Math.max(...this.radius)]
+      }
     },
   }
 }

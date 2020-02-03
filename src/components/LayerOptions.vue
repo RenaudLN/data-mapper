@@ -6,10 +6,13 @@
         <img src="../assets/visible.svg" />
         <img src="../assets/delete.svg" @click="removeLayer"/>
       </div>
+
       <span class="form-label">Dataset*</span>
-      <cool-select :items="datasets" v-model="dataset" item-value="name" item-text="name"/>
+      <cool-select :items="datasets" v-model="dataset" item-value="name" item-text="name" placeholder="Select one..."/>
+
       <span class="form-label">Layer Type*</span>
-      <cool-select :items="layerTypes" v-model="type" item-value="name" item-text="name"/>
+      <cool-select :items="layerTypes" v-model="type" item-value="name" item-text="name" placeholder="Select one..."/>
+
       <scatter-options :index-layer="indexLayer"/>
     </div>
   </div>
@@ -73,8 +76,8 @@ export default {
     font-size: 0.75rem;
     /* font-variant: small-caps; */
     text-transform: capitalize;
-    margin-top: 1em;
-    display: block;
+    margin-top: 12px;
+    display: inline-block;
     color: #009688;
     font-weight: 600;
   }
@@ -112,6 +115,23 @@ export default {
   select.browser-default {
     padding: 0;
     height: auto;
+  }
+  .switch {
+    float: right;
+    margin-top: 7px;
+  }
+  span.lever {
+    height: 10px !important;
+    width: 24px !important;
+    margin: 0 5px !important;
+  }
+  span.lever::after, span.lever::before {
+    height: 14px !important;
+    width: 14px !important;
+    top: -2px !important;
+  }
+  .switch label input[type=checkbox]:checked+.lever:before, .switch label input[type=checkbox]:checked+.lever:after {
+    left: 10px !important;
   }
 
 </style>

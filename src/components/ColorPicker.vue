@@ -24,3 +24,19 @@ export default {
   }
 }
 </script>
+
+<style>
+.color-picker {
+  height: 1em;
+  width: 100%;
+  border: 1px solid #333;
+}
+.vue-popover.dropdown-position-right{
+  position: fixed;
+  left: 260px !important;
+  bottom: 0 !important;
+  top: unset !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+</style>

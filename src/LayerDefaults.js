@@ -2,12 +2,14 @@ const baseLayerDefaults = {
   name: "Point",
   type: "Scatter",
   dataset: null,
-  latField: null,
-  lngField: null,
 }
 
-const scatterLayerDefaults = {    
-  radius: 20,
+const scatterLayerDefaults = {
+  latField: null,
+  lngField: null,
+  radiusBase: null,
+  fillColorBase: null,
+  radius: [20],
   weight: 2,
   color: "#000",
   opacity: 1,

@@ -33,14 +33,14 @@ const store = new Vuex.Store({
         dataset: "Sample data",
         latField: "lat",
         lngField: "lon",
-        options: {
-          radius: 18,
-          color: '#000',
-          weight: 1,
-          fillColor: '#00f',
-          fillOpacity: 0.8,
-          opacity: 1,
-        }
+        radiusBase: null,
+        fillColorBase: null,
+        radius: [18],
+        color: '#000',
+        weight: 1,
+        fillColor: '#00f',
+        fillOpacity: 0.8,
+        opacity: 1,
       }
     ]
   },
@@ -49,55 +49,46 @@ const store = new Vuex.Store({
       window.console.log('addLayer')
       state.layers.push({
         ...baseLayerDefaults,
-        options: scatterLayerDefaults
+        ...scatterLayerDefaults
       })
     },
     removeLayer (state, indexLayer) {
-      window.console.log('removeLayer', indexLayer)
       state.layers.splice(indexLayer, 1)
     },
     setScatterRadius (state, payload) {
-      window.console.log('setScatterRadius ', payload)
-      state.layers[payload.indexLayer].options.radius = payload.radius
+      state.layers[payload.indexLayer].radius = payload.radius
+    },
+    setScatterRadiusBase (state, payload) {
+      state.layers[payload.indexLayer].radiusBase = payload.radiusBase
     },
     setScatterWeight (state, payload) {
-      window.console.log('setScatterWeight ', payload)
-      state.layers[payload.indexLayer].options.weight = payload.weight
+      state.layers[payload.indexLayer].weight = payload.weight
     },
     setScatterOpacity (state, payload) {
-      window.console.log('setScatterOpacity ', payload)
-      state.layers[payload.indexLayer].options.opacity = payload.opacity
+      state.layers[payload.indexLayer].opacity = payload.opacity
     },
     setScatterFillOpacity (state, payload) {
-      window.console.log('setScatterFillOpacity ', payload)
-      state.layers[payload.indexLayer].options.fillOpacity = payload.fillOpacity
+      state.layers[payload.indexLayer].fillOpacity = payload.fillOpacity
     },
     setScatterFillColor (state, payload) {
-      window.console.log('setScatterFillColor ', payload)
-      state.layers[payload.indexLayer].options.fillColor = payload.fillColor
+      state.layers[payload.indexLayer].fillColor = payload.fillColor
     },
     setScatterColor (state, payload) {
-      window.console.log('setScatterColor ', payload)
-      state.layers[payload.indexLayer].options.color = payload.color
+      state.layers[payload.indexLayer].color = payload.color
     },
     setName (state, payload) {
-      window.console.log('setName ', payload)
       state.layers[payload.indexLayer].name = payload.name 
     },
     setDataset (state, payload) {
-      window.console.log('setDataset ', payload)
       state.layers[payload.indexLayer].dataset = payload.dataset 
     },
     setLayerType (state, payload) {
-      window.console.log('setLayerType ', payload)
       state.layers[payload.indexLayer].type = payload.type 
     },
     setLatField (state, payload) {
-      window.console.log('setLatField ', payload)
       state.layers[payload.indexLayer].latField = payload.latField 
     },
     setLngField (state, payload) {
-      window.console.log('setLngField ', payload)
       state.layers[payload.indexLayer].lngField = payload.lngField 
     },
   }
