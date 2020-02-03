@@ -1,5 +1,5 @@
 <template>
-  <div id="sidebar">
+  <div id="sidebar" :class="isHidden ? 'hidden' : ''">
     <div id="title">Data Mapper</div>
     <div id="tabs">
       <div class="tab-container">
@@ -13,25 +13,42 @@
         </div>
       </div>
       <div class="tab-content">
-        <layer-options />
+        <div :is="activeTab" />
+        <!-- <layer-options :index-layer="i-1" v-for="i in nLayers" :key="i"/>
+        <button id="add-layer" class="btn" @click="addLayer"><span>+</span><span> Add layer</span></button> -->
       </div>
+    </div>
+    <div id="hide-sidebar" @click="toggleSidebar">
+      {{hideButtonText}}
     </div>
   </div>
 </template>
 
 <script>
-import LayerOptions from "./LayerOptions.vue"
+import Layers from "./Layers.vue"
 
 export default {
   name: "Sidebar",
   components: {
-    LayerOptions
+    Layers,
   },
   data () {
     return {
-      tabs: ["layer-options", "map-options", "filter-options"],
-      activeTab: "layer-options",
+      tabs: ["Layers", "Map", "Filter"],
+      activeTab: "Layers",
+      isHidden: false,
+      hideButtonText: "<"
     }
+  },
+  methods: {
+    toggleSidebar: function() {
+      this.isHidden = !this.isHidden;
+      if (this.isHidden) {
+        this.hideButtonText = ">"
+      } else {
+        this.hideButtonText = "<"
+      }
+    },
   }
 }
 </script>
@@ -39,15 +56,19 @@ export default {
 <style scoped>
   #sidebar {
     position: fixed;
-    top: .5em;
-    bottom: .5em;
-    left: .5em;
-    width: 250px;
+    top: var(--base-margin);
+    bottom: var(--base-margin);
+    left: var(--base-margin);
+    width: var(--sidebar-width);
     background-color: #fafafa;
     z-index: 500;
     text-align: left;
     display: flex;
     flex-direction: column;
+    transition: transform linear 0.2s;
+  }
+  #sidebar.hidden {
+    transform: translateX(calc(-100% - var(--base-margin)));
   }
   #title {
     margin: 0;
@@ -88,8 +109,22 @@ export default {
   }
   .tab-content {
     padding: 0.5em;
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     flex: 1 1 auto;
     background-color: #fff;
+  }
+  #hide-sidebar {
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 24px;
+    width: 24px;
+    line-height: 24px;
+    text-align: center;
+    font-weight: bold;
+    background-color: #fafafa;
+    transform: translateX(100%) translateX(var(--base-margin));
+    cursor: pointer;
   }
 </style>
