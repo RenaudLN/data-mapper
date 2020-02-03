@@ -35,10 +35,9 @@
       cRadius: function() {
         const p = this.getPoints()
         const r = this.layer.radius
-        window.console.log(r)
         const l = this.layer
-        if (l.radiusBase) {
-          const d = this.$store.state.datasets[l.dataset]
+        const d = this.$store.state.datasets[l.dataset]
+        if (l.radiusBase && d[l.radiusBase]) {
           return d[l.radiusBase].map((x) => Math.sqrt(x / Math.max(...d[l.radiusBase])) * (r[1] - r[0]) + r[0])
         } else {
           return new Array(p.length).fill(r[r.length - 1])
