@@ -9,8 +9,13 @@
     LFeatureGroup,
     LGeoJson,
   } from 'vue2-leaflet'
-  import { circleMarker } from 'leaflet';
+  import { circleMarker, canvas} from 'leaflet';
   import chroma from "chroma-js"
+  import * as tf from '@tensorflow/tfjs'
+  // const t = tf.fill([10], 2)
+  // window.console.log(tf.add(tf.mul(5, tf.sqrt(tf.div(t, t.max()))), 3).dataSync())
+
+  const myRenderer = canvas({ padding: 0.5 });
 
   export default {
     name: "ScatterLayer",
@@ -39,7 +44,7 @@
                   color: this.cColor[index],
                   opacity: this.cOpacity[index],
                 },
-                text: "Point" + index
+                text: "Point " + index
               },
               id: index
             }
@@ -51,11 +56,11 @@
           style: function(feature) {
             return feature.properties && feature.properties.style;
           },
-          onEachFeature: function (feature, layer) {
-            layer.bindTooltip(feature.properties.text)
-          },
           pointToLayer: function(feature, latlng) {
-            return circleMarker(latlng, feature.properties.style);
+            return circleMarker(
+              latlng,
+              {...feature.properties.style, renderer:myRenderer}
+            ).bindTooltip("<b>" + feature.properties.text + "</b>");
           },
         }
       },
@@ -64,11 +69,19 @@
         const l = this.layer
         const d = this.$store.state.datasets[l.dataset]
         if (l.fixedRadius) {
-          return new Array(p.length).fill(l.radius)
+          return tf.fill([p.length], l.radius).dataSync()
         } else if (l.radiusBase && d[l.radiusBase]) {
-          return d[l.radiusBase].map((x) => Math.sqrt(x / Math.max(...d[l.radiusBase])) * (l.radius[1] - l.radius[0]) + l.radius[0])
+          const t = tf.tensor1d(d[l.radiusBase])
+          const r = tf.add(
+            l.radius[0],
+            tf.mul(
+              l.radius[1] - l.radius[0],
+              tf.sqrt(tf.div(t, t.max()))
+            )
+          ).dataSync()
+          return r
         } else {
-          return new Array(p.length).fill(l.radius[1])
+          return tf.fill([p.length], l.radius[1]).dataSync()
         }
       },
       cFillColor: function() {

@@ -136,6 +136,13 @@ export default {
   .section-title.v-collapse-toggler {
     cursor: pointer;
   }
+  .section-title.v-collapse-toggler::after {
+    font-size: 1rem;
+    content: "☰";/*"⋮";*/
+    float: right;
+    height: 25px;
+    line-height: 25px;
+  }
   .section-title.v-collapse-toggler:hover {
     filter: brightness(0.7);
   }
@@ -143,16 +150,14 @@ export default {
     margin-top: 0px;
   }
   .v-collapse-content {
-    /* max-height: 0; */
-    height: 0;
-    transition: height 0.2s ease-out;
+    max-height: 0;
+    transition: max-height 0.3s linear;
     overflow: hidden;
     padding: 0;
   }
   .v-collapse-content-end {
-    transition: height 0.2s ease-in;
-    /* max-height: 1000px; */
-    height: auto;
+    transition: max-height 0.3s linear;
+    max-height: 10000px;
     overflow: visible;
   }
 </style>
