@@ -25,6 +25,9 @@ export default {
     float: right;
     margin-top: 7px;
   }
+  .section-title+span.form-label+.switch {
+    margin-top: -2px;
+  }
   span.lever {
     height: 10px !important;
     width: 24px !important;

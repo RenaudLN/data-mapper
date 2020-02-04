@@ -5,20 +5,23 @@ import {baseLayerDefaults, scatterLayerDefaults} from './LayerDefaults.js'
 import { CoolSelectPlugin } from "vue-cool-select"
 import VModal from 'vue-js-modal'
 import Popover  from 'vue-js-popover'
+import VueCollapse from 'vue2-collapse'
 
 Vue.config.productionTip = false
 Vue.use(Vuex)
 Vue.use(CoolSelectPlugin)
 Vue.use(VModal)
 Vue.use(Popover)
+Vue.use(VueCollapse)
 
+const N1 = 100
 const store = new Vuex.Store({
   state: {
     datasets: {
       "Sample data": {
-        lat: [47, 47.1, 47.2, 47.3],
-        lon: [1, 1.1, 1.2, 1.3],
-        value: [10, 2, 5, 8],
+        lat: Array.from({length: N1}, () => Math.random() * 2 + 46),
+        lon: Array.from({length: N1}, () => Math.random() * 2 + 0),
+        value: Array.from({length: N1}, () => Math.random() * 10 + 0),
       },
       "Sample data 2": {
         lat: [47.5, 47.6, 47.7, 47.8, 47.9],
@@ -33,18 +36,32 @@ const store = new Vuex.Store({
         dataset: "Sample data",
         latField: "lat",
         lngField: "lon",
+
         fixedRadius: true,
         radius: 18,
         radiusBase: null,
+
         fixedFillColor: true,
         fillColor: "#00f",
-        scaleName: "viridis",
+        fillColorscaleName: "viridis",
         fillColorscale: [],
-        reversescale: false,
+        fillReverseScale: false,
         fillColorBase: null,
+
         fillOpacity: 0.8,
-        weight: 1,
-        color: '#000',
+
+        fixedWeight: true,
+        weight: 2,
+        weightBase: null,
+        
+      
+        fixedColor: true,
+        color: "#000",
+        colorscaleName: "greys",
+        colorscale: [],
+        reverseScale: false,
+        colorBase: null,
+
         opacity: 1,
       }
     ]
@@ -69,8 +86,14 @@ const store = new Vuex.Store({
     setScatterRadiusBase (state, payload) {
       state.layers[payload.indexLayer].radiusBase = payload.radiusBase
     },
+    setScatterFixedWeight (state, payload) {
+      state.layers[payload.indexLayer].fixedWeight = payload.fixedWeight
+    },
     setScatterWeight (state, payload) {
       state.layers[payload.indexLayer].weight = payload.weight
+    },
+    setScatterWeightBase (state, payload) {
+      state.layers[payload.indexLayer].weightBase = payload.weightBase
     },
     setScatterOpacity (state, payload) {
       state.layers[payload.indexLayer].opacity = payload.opacity
@@ -87,14 +110,26 @@ const store = new Vuex.Store({
     setScatterFillColorscale (state, payload) {
       state.layers[payload.indexLayer].fillColorscale = payload.fillColorscale
     },
-    setScatterScaleName (state, payload) {
-      state.layers[payload.indexLayer].scaleName = payload.scaleName
+    setScatterFillColorscaleName (state, payload) {
+      state.layers[payload.indexLayer].fillColorscaleName = payload.fillColorscaleName
     },
     setScatterFillColorBase (state, payload) {
       state.layers[payload.indexLayer].fillColorBase = payload.fillColorBase
     },
+    setScatterFixedColor (state, payload) {
+      state.layers[payload.indexLayer].fixedColor = payload.fixedColor
+    },
     setScatterColor (state, payload) {
       state.layers[payload.indexLayer].color = payload.color
+    },
+    setScatterColorscale (state, payload) {
+      state.layers[payload.indexLayer].colorscale = payload.colorscale
+    },
+    setScatterColorscaleName (state, payload) {
+      state.layers[payload.indexLayer].colorscaleName = payload.colorscaleName
+    },
+    setScatterColorBase (state, payload) {
+      state.layers[payload.indexLayer].colorBase = payload.colorBase
     },
     setName (state, payload) {
       state.layers[payload.indexLayer].name = payload.name 

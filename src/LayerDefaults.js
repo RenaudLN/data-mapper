@@ -14,15 +14,25 @@ const scatterLayerDefaults = {
 
   fixedFillColor: true,
   fillColor: "#00f",
-  scaleName: "viridis",
+  fillColorscaleName: "viridis",
   fillColorscale: [],
-  reversescale: false,
+  fillReverseScale: false,
   fillColorBase: null,
   fillOpacity: 0.8,
 
+  fixedWeight: true,
   weight: 2,
+  weightBase: null,
+  
+
+  fixedColor: true,
   color: "#000",
+  colorscaleName: "greys",
+  colorscale: [],
+  reverseScale: false,
+  colorBase: null,
   opacity: 1,
+
   //dashArray: "1 4",
 }
 
