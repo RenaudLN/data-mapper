@@ -29,7 +29,7 @@ export default {
 .color-picker {
   height: 1em;
   width: 100%;
-  border: 1px solid #333;
+  cursor: pointer;
 }
 .vue-popover.dropdown-position-right{
   position: fixed;

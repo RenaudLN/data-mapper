@@ -116,22 +116,5 @@ export default {
     padding: 0;
     height: auto;
   }
-  .switch {
-    float: right;
-    margin-top: 7px;
-  }
-  span.lever {
-    height: 10px !important;
-    width: 24px !important;
-    margin: 0 5px !important;
-  }
-  span.lever::after, span.lever::before {
-    height: 14px !important;
-    width: 14px !important;
-    top: -2px !important;
-  }
-  .switch label input[type=checkbox]:checked+.lever:before, .switch label input[type=checkbox]:checked+.lever:after {
-    left: 10px !important;
-  }
 
 </style>

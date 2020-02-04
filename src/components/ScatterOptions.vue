@@ -10,14 +10,21 @@
     <switcher @switch="handleRadiusBase" />
     <vue-slider :min="0" :max="100" v-model="radius" :lazy="true" />
 
-    <template v-if="showRadiusBase">
+    <template v-if="!fixedRadius">
       <span class="form-label">Radius Based On</span>
       <cool-select :items="fields" v-model="radiusBase" item-value="name" item-text="name" placeholder="Select one..."/>
     </template>
 
     <span class="form-label">Fill Color</span>
-    <switcher />
-    <color-picker :name="'fillColorPicker' + indexLayer" :value="fillColor" @pick-color="fillColor = $event" />
+    <switcher @switch="fixedFillColor = !$event" />
+    <template v-if="fixedFillColor">
+      <color-picker :name="'fillColorPicker' + indexLayer" :value="fillColor" @pick-color="fillColor = $event" />
+    </template>
+    <template v-else>
+      <color-scale @pick-colorscale="fillColorscale = $event.colors; scaleName=$event.name" :scale-name="scaleName"/>
+      <span class="form-label">Fill Color Based On</span>
+      <cool-select :items="fields" v-model="fillColorBase" item-value="name" item-text="name" placeholder="Select one..."/>
+    </template>
 
     <span class="form-label">Fill Opacity</span>
     <vue-slider :min="0" :max="1" :interval="0.1" v-model="fillOpacity" :lazy="true" />
@@ -32,6 +39,7 @@
       <span class="form-label">Outline Opacity</span>
       <vue-slider :min="0" :max="1" :interval="0.1" v-model="opacity" :lazy="true" />
     </template>
+
   </div>
 </template>
 
@@ -40,6 +48,7 @@ import VueSlider from 'vue-slider-component'
 import { CoolSelect } from 'vue-cool-select'
 import ColorPicker from './ColorPicker.vue'
 import Switcher from './Switcher.vue'
+import ColorScale from './ColorScale.vue'
 
 export default {
   name: "ScatterOptions",
@@ -48,13 +57,9 @@ export default {
     CoolSelect,
     ColorPicker,
     Switcher,
+    ColorScale,
   },
   props: ["indexLayer"],
-  data() {
-    return {
-      showRadiusBase: false
-    }
-  },
   computed: {    
     fields: function() {
       const dn = this.$store.state.layers[this.indexLayer].dataset
@@ -78,14 +83,19 @@ export default {
         this.$store.commit("setLngField", {indexLayer: this.indexLayer, lngField: lngField})
       }
     },
+    fixedRadius: {      
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].fixedRadius
+      },
+      set: function(fixedRadius) {
+        this.$store.commit("setScatterFixedRadius", {indexLayer: this.indexLayer, fixedRadius: fixedRadius})
+      }
+    },
     radius: {
       get: function() {
         return this.$store.state.layers[this.indexLayer].radius
       },
       set: function(radius) {
-        if (typeof(radius) === "number") {
-          radius = [radius]
-        }
         this.$store.commit("setScatterRadius", {indexLayer: this.indexLayer, radius: radius})
       }
     },
@@ -121,12 +131,44 @@ export default {
         this.$store.commit("setScatterFillOpacity", {indexLayer: this.indexLayer, fillOpacity: fillOpacity})
       }
     },
+    fixedFillColor: {      
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].fixedFillColor
+      },
+      set: function(fixedFillColor) {
+        this.$store.commit("setScatterFixedFillColor", {indexLayer: this.indexLayer, fixedFillColor: fixedFillColor})
+      }
+    },
     fillColor: {
       get: function() {
         return this.$store.state.layers[this.indexLayer].fillColor
       },
       set: function(fillColor) {
         this.$store.commit("setScatterFillColor", {indexLayer: this.indexLayer, fillColor: fillColor.hex})
+      }
+    },
+    fillColorscale: {
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].fillColorscale
+      },
+      set: function(fillColorscale) {
+        this.$store.commit("setScatterFillColorscale", {indexLayer: this.indexLayer, fillColorscale: fillColorscale})
+      }
+    },
+    scaleName: {
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].scaleName
+      },
+      set: function(scaleName) {
+        this.$store.commit("setScatterScaleName", {indexLayer: this.indexLayer, scaleName: scaleName})
+      }
+    },
+    fillColorBase: {
+      get: function() {
+        return this.$store.state.layers[this.indexLayer].fillColorBase
+      },
+      set: function(fillColorBase) {
+        this.$store.commit("setScatterFillColorBase", {indexLayer: this.indexLayer, fillColorBase: fillColorBase})
       }
     },
     color: {
@@ -140,13 +182,11 @@ export default {
   },
   methods: {
     handleRadiusBase: function (event) {
-      window.console.log(this.radius)
-      this.showRadiusBase = event
+      this.fixedRadius = !event
       if (event) {
-        this.radius = [0, Math.max(...this.radius)]
+        this.radius = [0, this.radius]
       } else {
-        this.radius = [Math.max(...this.radius)]
-        this.radiusBase = null
+        this.radius = Math.max(...this.radius)
       }
     },
   }

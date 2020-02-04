@@ -33,13 +33,18 @@ const store = new Vuex.Store({
         dataset: "Sample data",
         latField: "lat",
         lngField: "lon",
+        fixedRadius: true,
+        radius: 18,
         radiusBase: null,
+        fixedFillColor: true,
+        fillColor: "#00f",
+        scaleName: "viridis",
+        fillColorscale: [],
+        reversescale: false,
         fillColorBase: null,
-        radius: [18],
-        color: '#000',
-        weight: 1,
-        fillColor: '#00f',
         fillOpacity: 0.8,
+        weight: 1,
+        color: '#000',
         opacity: 1,
       }
     ]
@@ -54,6 +59,9 @@ const store = new Vuex.Store({
     },
     removeLayer (state, indexLayer) {
       state.layers.splice(indexLayer, 1)
+    },
+    setScatterFixedRadius (state, payload) {
+      state.layers[payload.indexLayer].fixedRadius = payload.fixedRadius
     },
     setScatterRadius (state, payload) {
       state.layers[payload.indexLayer].radius = payload.radius
@@ -70,8 +78,20 @@ const store = new Vuex.Store({
     setScatterFillOpacity (state, payload) {
       state.layers[payload.indexLayer].fillOpacity = payload.fillOpacity
     },
+    setScatterFixedFillColor (state, payload) {
+      state.layers[payload.indexLayer].fixedFillColor = payload.fixedFillColor
+    },
     setScatterFillColor (state, payload) {
       state.layers[payload.indexLayer].fillColor = payload.fillColor
+    },
+    setScatterFillColorscale (state, payload) {
+      state.layers[payload.indexLayer].fillColorscale = payload.fillColorscale
+    },
+    setScatterScaleName (state, payload) {
+      state.layers[payload.indexLayer].scaleName = payload.scaleName
+    },
+    setScatterFillColorBase (state, payload) {
+      state.layers[payload.indexLayer].fillColorBase = payload.fillColorBase
     },
     setScatterColor (state, payload) {
       state.layers[payload.indexLayer].color = payload.color

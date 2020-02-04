@@ -7,15 +7,23 @@ const baseLayerDefaults = {
 const scatterLayerDefaults = {
   latField: null,
   lngField: null,
+  
+  fixedRadius: true,
+  radius: 20,
   radiusBase: null,
+
+  fixedFillColor: true,
+  fillColor: "#00f",
+  scaleName: "viridis",
+  fillColorscale: [],
+  reversescale: false,
   fillColorBase: null,
-  radius: [20],
+  fillOpacity: 0.8,
+
   weight: 2,
   color: "#000",
   opacity: 1,
   //dashArray: "1 4",
-  fillColor: "#00f",
-  fillOpacity: 0.8,
 }
 
 export {baseLayerDefaults, scatterLayerDefaults}
