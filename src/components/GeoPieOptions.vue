@@ -76,7 +76,7 @@ import Switcher from './Switcher.vue'
 import ColorScale from './ColorScale.vue'
 
 export default {
-  name: "ScatterOptions",
+  name: "GeoPieOptions",
   components: {
     VueSlider,
     CoolSelect,

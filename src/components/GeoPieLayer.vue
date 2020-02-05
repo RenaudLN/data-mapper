@@ -10,24 +10,47 @@
     LGeoJson,
   } from 'vue2-leaflet'
   import {
-    circleMarker,
-    canvas,
-    // divIcon,
-    // marker
+    // circleMarker,
+    // canvas,
+    divIcon,
+    marker
   } from 'leaflet';
   import chroma from "chroma-js"
   import * as tf from '@tensorflow/tfjs'
   // const t = tf.fill([10], 2)
   // window.console.log(tf.add(tf.mul(5, tf.sqrt(tf.div(t, t.max()))), 3).dataSync())
 
-  const myRenderer = canvas({ padding: 0.5 });
+  // const myRenderer = canvas({ padding: 0.5 });
 
   export default {
-    name: "ScatterLayer",
+    name: "GeoPieLayer",
     props: ["layer"],
     components: {
       LFeatureGroup,
       LGeoJson,
+    },
+    methods: {
+      svgPie: function(values, s) {
+        const c = this.layer.fillColorscale
+        let v = tf.tensor([0, ...values])
+        let v2 = v.cumsum().div(v.sum()).mul(2 * Math.PI).add(-Math.PI/2)
+        const x = tf.cos(v2).mul(100).add(120).dataSync()
+        const y = tf.sin(v2).mul(100).add(120).dataSync()
+        let svgString = '<svg viewbox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">'
+        const t = v.slice([1], [values.length]).div(v.sum()).dataSync()
+        for (let i = 0; i < values.length; i++) {
+          let flags = " 0,1 "
+          if (t[i] > 0.5) {
+            flags = " 1,1 "
+          }
+          // svgString += '<g><path d="M100,100 L'+x[i]+','+y[i]+' L'+x[i+1]+','+y[i+1]+' z" /></g>'
+          svgString += '<g><path d="M120,120 L'+x[i]+','+y[i]+' A100,100 0'+flags+x[i+1]+','+y[i+1]+' z" '
+          svgString += 'fill="'+c[i]+'" stroke="'+s.color+'" stroke-width="'+s.weight+'" stroke-linejoin="bevel" '
+          svgString += 'fill-opacity="'+s.fillOpacity+'" opacity="'+s.opacity+'" /></g>'
+        }
+        svgString += '</svg>'
+        return svgString
+      }
     },
     computed: {
       geojson: function() {
@@ -49,6 +72,7 @@
                   color: this.cColor[index],
                   opacity: this.cOpacity[index],
                 },
+                values: [20, 20, 20, 30, 5, 10, 12],
                 text: "Point " + index
               },
               id: index
@@ -57,29 +81,22 @@
         }
       },
       options: function() {
+        const svgPie = this.svgPie
         return {
           style: function(feature) {
             return feature.properties && feature.properties.style;
           },
-          // pointToLayer: function(feature, latlng) {
-          //   const s = feature.properties.style
-          //   let svgString = '<svg width="'+s.radius+'" height="'+s.radius+'" xmlns="http://www.w3.org/2000/svg"><circle fill-opacity="'+s.fillOpacity+'" fill="'+s.fillColor+'" cx="'+s.radius/2+'" cy="'+s.radius/2+'" r="'+s.radius/2+'"/></svg>'
-          //   return marker(latlng,
-          //     {
-          //       icon: divIcon({
-          //         html: svgString,
-          //         iconSize: [s.radius, s.radius],
-          //         iconAnchor: [s.radius/2, s.radius/2]      
-          //       }),
-          //       // id: i
-          //     }
-          //   )
-          // },
           pointToLayer: function(feature, latlng) {
-            return circleMarker(
-              latlng,
-              {...feature.properties.style, renderer:myRenderer}
-            ).bindTooltip("<b>" + feature.properties.text + "</b>");
+            const s = feature.properties.style
+            return marker(latlng,
+              {
+                icon: divIcon({
+                  html: svgPie(feature.properties.values, s),
+                  iconSize: [s.radius*2*1.2, s.radius*2*1.2],
+                  iconAnchor: [s.radius, s.radius]
+                }),
+              }
+            )
           },
         }
       },
@@ -168,6 +185,6 @@
         }
         return points
       }
-    }
+    },
   }
 </script>

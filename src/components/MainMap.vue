@@ -19,6 +19,7 @@
     // LTooltip,
   } from 'vue2-leaflet'
   import ScatterLayer from './ScatterLayer.vue'
+  import GeoPieLayer from './GeoPieLayer.vue'
   import 'leaflet/dist/leaflet.css'
 
   export default {
@@ -26,7 +27,8 @@
     components: {
       LMap,
       LTileLayer,
-      ScatterLayer
+      ScatterLayer,
+      GeoPieLayer,
     },
     data () {
       return {
@@ -59,5 +61,9 @@
 <style>
   .leaflet-control-zoom {
     display: none !important;
+  }
+  .leaflet-div-icon {
+    background: transparent;
+    border: none;
   }
 </style>

@@ -13,19 +13,21 @@
         <span class="form-label">Layer Type*</span>
         <cool-select :items="layerTypes" v-model="type" item-value="name" item-text="name" placeholder="Select one..."/>
       </div>
-      <scatter-options :index-layer="indexLayer"/>
+      <div :is="type+'-options'" :index-layer="indexLayer"/>
     </div>
   </div>
 </template>
 
 <script>
 import ScatterOptions from "./ScatterOptions.vue"
+import GeoPieOptions from "./GeoPieOptions.vue"
 import { CoolSelect } from "vue-cool-select"
 
 export default {
   name:"LayerOptions",
   components: {
     ScatterOptions,
+    GeoPieOptions,
     CoolSelect,
   },
   props: ["indexLayer"],
@@ -139,7 +141,9 @@ export default {
   .section-title.v-collapse-toggler::after {
     font-size: 1rem;
     content: "☰";/*"⋮";*/
-    float: right;
+    /* float: right; */
+    position: absolute;
+    right: 0.5em;
     height: 25px;
     line-height: 25px;
   }

@@ -14,7 +14,7 @@ Vue.use(VModal)
 Vue.use(Popover)
 Vue.use(VueCollapse)
 
-const N1 = 100
+const N1 = 10
 const store = new Vuex.Store({
   state: {
     datasets: {
