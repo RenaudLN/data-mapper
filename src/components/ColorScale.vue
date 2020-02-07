@@ -20,6 +20,7 @@
         </div>
       </template>
     </cool-select>
+    <switcher alignment="none" before="" after="Custom Colors" />
   </div>
 </template>
 
@@ -27,11 +28,13 @@
 import chroma from "chroma-js"
 // import * as tf from '@tensorflow/tfjs';
 import { CoolSelect } from 'vue-cool-select'
+import Switcher from './Switcher.vue'
 
 export default {
   name: "ColorScale",
   components: {
     CoolSelect,
+    Switcher,
   },
   props: {scaleName: {type: String, default: "viridis"}},
   data () {
@@ -51,7 +54,11 @@ export default {
       })
     },
     colors: function() {
-      return chroma.brewer[this.sName]
+      if (this.sName !== "custom"){
+        return chroma.brewer[this.sName]
+      } else {
+        return []
+      }
     },
     // colorsBase: function() {
     //   if (this.scaleName !== "Custom") {

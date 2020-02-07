@@ -23,6 +23,8 @@ import ScatterOptions from "./ScatterOptions.vue"
 import GeoPieOptions from "./GeoPieOptions.vue"
 import { CoolSelect } from "vue-cool-select"
 
+const computedFields = ["name", "dataset", "type"]
+
 export default {
   name:"LayerOptions",
   components: {
@@ -40,30 +42,14 @@ export default {
     datasets: function() {
       return Object.keys(this.$store.state.datasets).map((d) => {return {name: d}})
     },
-    name: {
+    ...computedFields.reduce((a,b)=> (a[b]={
       get: function() {
-        return this.$store.state.layers[this.indexLayer].name
+        return this.$store.state.layers[this.indexLayer][b]
       },
-      set: function(name) {
-        this.$store.commit("setName", {indexLayer: this.indexLayer, name: name})
+      set: function(x) {
+        this.$store.commit("setLayerField", {indexLayer: this.indexLayer, field: b, value: x})
       }
-    },
-    dataset: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].dataset
-      },
-      set: function(dataset) {
-        this.$store.commit("setDataset", {indexLayer: this.indexLayer, dataset: dataset})
-      }
-    },
-    type: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].type
-      },
-      set: function(type) {
-        this.$store.commit("setLayerType", {indexLayer: this.indexLayer, type: type})
-      }
-    },
+    },a),{}),
   },
   methods: {
     removeLayer: function () {
@@ -103,6 +89,15 @@ export default {
     flex: 1 1 auto;
   }
   .card-title > input:hover {
+    background-color: #f0f0f0;
+  }
+  input.options-input {
+    font-size: 1rem !important;
+    height: 1.2rem !important;
+    margin-bottom: 0;
+    font-weight: 500 !important;
+  }
+  input.options-input:hover {
     background-color: #f0f0f0;
   }
   .card-title > img {

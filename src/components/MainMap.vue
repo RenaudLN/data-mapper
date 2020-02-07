@@ -1,25 +1,30 @@
 <template>
   <l-map
-    style="height: 100%; width: 100%"
-    :zoom="zoom"
-    :center="center"
-    @update:zoom="zoomUpdated"
-    @update:center="centerUpdated"
-    @update:bounds="boundsUpdated"
+    style="height: 100vh; width: 100vw"
+    :bounds="bounds"
+    :max-bounds="bounds"
   >
     <l-tile-layer :url="url" />
     <div :is="l.type + '-layer'" :layer="l" v-for="(l, i) in layers" :key="i" />
+    <l-control :position="'topright'">
+      <map-legend :layers="layers"/>
+    </l-control>
+    <print-control />
   </l-map>
 </template>
 
 <script>
-  import {LMap,
+  import {
+    LMap,
     LTileLayer,
-    // LCircleMarker,
-    // LTooltip,
+    LControl
   } from 'vue2-leaflet'
+  import {latLngBounds} from 'leaflet'
   import ScatterLayer from './ScatterLayer.vue'
   import GeoPieLayer from './GeoPieLayer.vue'
+  import PrintControl from './PrintControl.vue'
+  import MapLegend from './MapLegend.vue'
+  // import Vue from 'vue'
   import 'leaflet/dist/leaflet.css'
 
   export default {
@@ -29,14 +34,17 @@
       LTileLayer,
       ScatterLayer,
       GeoPieLayer,
+      PrintControl,
+      LControl,
+      MapLegend,
     },
     data () {
       return {
         url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-        zoom: 8,
-        center: [47.413220, 1],
-        markerLatLng: [47.413220, -1.219482],
-        bounds: null,
+        // zoom: 8,
+        // center: [47.413220, 1],
+        // markerLatLng: [47.413220, -1.219482],
+        bounds: latLngBounds([[60, -180], [-60, 180]])
       };
     },
     computed: {
@@ -44,17 +52,20 @@
         return this.$store.state.layers
       }
     },
-    methods: {
-      zoomUpdated (zoom) {
-        this.zoom = zoom;
-      },
-      centerUpdated (center) {
-        this.center = center;
-      },
-      boundsUpdated (bounds) {
-        this.bounds = bounds;
-      },
-    }
+    // mounted () {
+    //   const legend = control({position: "bottomcenter"})
+    //   legend.onAdd = function() {
+    //     let l = DomUtil.create("div", "legend")
+    //     l.innerHTML += "<h4>Tegnforklaring</h4>"
+    //     // const L = Vue.extend(MapLegend)
+    //     // const l = new L({propsData: {layers: this.layers}})
+    //     return l
+    //   }
+    //   legend.addTo(this.$parent.mapObject);
+    //   this.$nextTick(() => {
+    //     this.$emit('ready', legend);
+    //   });
+    // },
   }
 </script>
 

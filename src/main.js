@@ -6,6 +6,8 @@ import { CoolSelectPlugin } from "vue-cool-select"
 import VModal from 'vue-js-modal'
 import Popover  from 'vue-js-popover'
 import VueCollapse from 'vue2-collapse'
+import VDialogs from 'v-dialogs'
+
 
 Vue.config.productionTip = false
 Vue.use(Vuex)
@@ -13,20 +15,16 @@ Vue.use(CoolSelectPlugin)
 Vue.use(VModal)
 Vue.use(Popover)
 Vue.use(VueCollapse)
+Vue.use(VDialogs, {language: "en"})
 
-const N1 = 10
+const N1 = 20
 const store = new Vuex.Store({
   state: {
     datasets: {
       "Sample data": {
-        lat: Array.from({length: N1}, () => Math.random() * 2 + 46),
-        lon: Array.from({length: N1}, () => Math.random() * 2 + 0),
+        lat: Array.from({length: N1}, () => Math.random() * 160 - 80),
+        lon: Array.from({length: N1}, () => Math.random() * 360 - 180),
         value: Array.from({length: N1}, () => Math.random() * 10 + 0),
-      },
-      "Sample data 2": {
-        lat: [47.5, 47.6, 47.7, 47.8, 47.9],
-        lon: [1.3, 1.2, 1.1, 1., 0.9],
-        tmp: [10, 2, 5, 8, 0],
       },
     },
     layers: [
@@ -63,6 +61,11 @@ const store = new Vuex.Store({
         colorBase: null,
 
         opacity: 1,
+
+        pieFields: [],
+        pieTitle: null,
+        pieUnit: '',
+        showLabels: false,
       }
     ]
   },
@@ -77,74 +80,14 @@ const store = new Vuex.Store({
     removeLayer (state, indexLayer) {
       state.layers.splice(indexLayer, 1)
     },
-    setScatterFixedRadius (state, payload) {
-      state.layers[payload.indexLayer].fixedRadius = payload.fixedRadius
+    setLayerField (state, payload) {
+      let {indexLayer, field, value} = payload
+      window.console.log("set layer", indexLayer, "field", field, value)
+      state.layers[indexLayer][field] = value
     },
-    setScatterRadius (state, payload) {
-      state.layers[payload.indexLayer].radius = payload.radius
-    },
-    setScatterRadiusBase (state, payload) {
-      state.layers[payload.indexLayer].radiusBase = payload.radiusBase
-    },
-    setScatterFixedWeight (state, payload) {
-      state.layers[payload.indexLayer].fixedWeight = payload.fixedWeight
-    },
-    setScatterWeight (state, payload) {
-      state.layers[payload.indexLayer].weight = payload.weight
-    },
-    setScatterWeightBase (state, payload) {
-      state.layers[payload.indexLayer].weightBase = payload.weightBase
-    },
-    setScatterOpacity (state, payload) {
-      state.layers[payload.indexLayer].opacity = payload.opacity
-    },
-    setScatterFillOpacity (state, payload) {
-      state.layers[payload.indexLayer].fillOpacity = payload.fillOpacity
-    },
-    setScatterFixedFillColor (state, payload) {
-      state.layers[payload.indexLayer].fixedFillColor = payload.fixedFillColor
-    },
-    setScatterFillColor (state, payload) {
-      state.layers[payload.indexLayer].fillColor = payload.fillColor
-    },
-    setScatterFillColorscale (state, payload) {
-      state.layers[payload.indexLayer].fillColorscale = payload.fillColorscale
-    },
-    setScatterFillColorscaleName (state, payload) {
-      state.layers[payload.indexLayer].fillColorscaleName = payload.fillColorscaleName
-    },
-    setScatterFillColorBase (state, payload) {
-      state.layers[payload.indexLayer].fillColorBase = payload.fillColorBase
-    },
-    setScatterFixedColor (state, payload) {
-      state.layers[payload.indexLayer].fixedColor = payload.fixedColor
-    },
-    setScatterColor (state, payload) {
-      state.layers[payload.indexLayer].color = payload.color
-    },
-    setScatterColorscale (state, payload) {
-      state.layers[payload.indexLayer].colorscale = payload.colorscale
-    },
-    setScatterColorscaleName (state, payload) {
-      state.layers[payload.indexLayer].colorscaleName = payload.colorscaleName
-    },
-    setScatterColorBase (state, payload) {
-      state.layers[payload.indexLayer].colorBase = payload.colorBase
-    },
-    setName (state, payload) {
-      state.layers[payload.indexLayer].name = payload.name 
-    },
-    setDataset (state, payload) {
-      state.layers[payload.indexLayer].dataset = payload.dataset 
-    },
-    setLayerType (state, payload) {
-      state.layers[payload.indexLayer].type = payload.type 
-    },
-    setLatField (state, payload) {
-      state.layers[payload.indexLayer].latField = payload.latField 
-    },
-    setLngField (state, payload) {
-      state.layers[payload.indexLayer].lngField = payload.lngField 
+    addDataset (state, payload) {
+      window.console.log("add dataset", payload)
+      state.datasets = Object.assign({}, state.datasets, {[payload.name]: payload.data})
     },
   }
 })

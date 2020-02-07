@@ -1,10 +1,10 @@
 <template>
-  <div class="switch">
-    <label :style="on?'color: #000;':''">
-      <slot name="before">Based on data</slot>
-      <input v-model="on" type="checkbox" @input="$emit('switch', !on)">
+  <div class="switch" :style="'float: ' + alignment">
+    <label :style="value?'color: #000;':''">
+      {{before}}
+      <input type="checkbox" v-model="value" @input="$emit('switch', !value)" />
       <span class="lever"></span>
-      <slot name="after"/>
+      {{after}}
     </label>
   </div>    
 </template>
@@ -12,9 +12,15 @@
 <script>
 export default {
   name: "Switcher",
+  props: {
+    alignment: {type: String, default: "right"},
+    before: {type: String, default:"Based on Data"},
+    after: {type: String, default:""},
+    initialValue: {type: Boolean, default: false},
+  },
   data () {
     return {
-      on: false
+      value: this.initialValue
     }
   }
 }
@@ -22,7 +28,6 @@ export default {
 
 <style>
   .switch {
-    float: right;
     margin-top: 7px;
   }
   .section-title+span.form-label+.switch {

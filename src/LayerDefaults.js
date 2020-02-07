@@ -2,6 +2,11 @@ const baseLayerDefaults = {
   name: "Point",
   type: "Scatter",
   dataset: null,
+
+  pieFields: [],
+  pieTitle: null,
+  pieUnit: '',
+  showLabels: false,
 }
 
 const scatterLayerDefaults = {

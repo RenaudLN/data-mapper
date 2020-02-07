@@ -1,6 +1,7 @@
 <template>
   <l-feature-group>
       <l-geo-json :geojson="geojson" :options="options"/>
+      <l-geo-json v-if="layer.showLabels" :geojson="geojson" :options="labelOptions"/>
   </l-feature-group>
 </template>
 
@@ -30,30 +31,62 @@
       LGeoJson,
     },
     methods: {
-      svgPie: function(values, s) {
-        const c = this.layer.fillColorscale
+      svgPie: function(valuesObject, s) {
+        const values = Object.values(valuesObject);
         let v = tf.tensor([0, ...values])
         let v2 = v.cumsum().div(v.sum()).mul(2 * Math.PI).add(-Math.PI/2)
         const x = tf.cos(v2).mul(100).add(120).dataSync()
         const y = tf.sin(v2).mul(100).add(120).dataSync()
         let svgString = '<svg viewbox="0 0 240 240" xmlns="http://www.w3.org/2000/svg">'
         const t = v.slice([1], [values.length]).div(v.sum()).dataSync()
-        for (let i = 0; i < values.length; i++) {
-          let flags = " 0,1 "
-          if (t[i] > 0.5) {
-            flags = " 1,1 "
+        if (t.indexOf(1.) > -1) {
+          let i = t.indexOf(1)
+          svgString += '<circle cx="120" cy="120", r="100" fill="'+s.fillColors[i]+'" stroke="'+s.color
+          svgString += '" stroke-width="'+s.weight+'fill-opacity="'+s.fillOpacity+'" opacity="'+s.opacity+'"/>'
+        } else {
+          for (let i = 0; i < values.length; i++) {
+            let flags = " 0,1 "
+            if (t[i] > 0.5) {
+              flags = " 1,1 "
+            }
+            svgString += '<g><path d="M120,120 L'+x[i]+','+y[i]+' A100,100 0'+flags+x[i+1]+','+y[i+1]+' z" '
+            svgString += 'fill="'+s.fillColors[i]+'" stroke="'+s.color+'" stroke-width="'+s.weight+'" stroke-linejoin="bevel" '
+            svgString += 'fill-opacity="'+s.fillOpacity+'" opacity="'+s.opacity+'"></path></g>'
           }
-          // svgString += '<g><path d="M100,100 L'+x[i]+','+y[i]+' L'+x[i+1]+','+y[i+1]+' z" /></g>'
-          svgString += '<g><path d="M120,120 L'+x[i]+','+y[i]+' A100,100 0'+flags+x[i+1]+','+y[i+1]+' z" '
-          svgString += 'fill="'+c[i]+'" stroke="'+s.color+'" stroke-width="'+s.weight+'" stroke-linejoin="bevel" '
-          svgString += 'fill-opacity="'+s.fillOpacity+'" opacity="'+s.opacity+'" /></g>'
         }
         svgString += '</svg>'
         return svgString
+      },
+      tooltipPie(p) {
+        const keys = Object.keys(p.values)
+        const values = Object.values(p.values)
+        let tooltip = '<div class="marker-tooltip">'
+        if (p.text){
+          tooltip += '<div class="marker-tooltip-title">'+p.text+'</div>'
+        }
+        tooltip += '<ul>'
+        const c = this.layer.fillColorscale
+        for (let i = 0; i < values.length; i++) {
+          tooltip += '<li><div style="background-color: '+c[i]+'" class="color-sample"></div>'+keys[i]+': '
+          tooltip += values[i].toPrecision(3)+' '+p.unit+'</li>'
+        }
+        tooltip += '</ul></div>'
+        return tooltip
+      },
+      labelPie(p) {
+        const values = Object.values(p.values)
+        const totalValue = tf.tensor(values).sum().dataSync()
+        let label = '<div style="background-color: rgba(255,255,255,0.75); width: auto; padding: 0.15em 0.5em;'
+        label += 'transform: translate(-50%, -100%) translateY(' + (-p.style.radius-2) + 'px);" class="pie-label">'
+        label += p.text?p.text+' <br>':''
+        label += Number(totalValue).toPrecision(3) + ' ' + p.unit + '</div>'
+        return label
       }
     },
     computed: {
       geojson: function() {
+        const l = this.layer
+        const d = this.$store.state.datasets[l.dataset]
         return {
           type: "FeatureCollection",
           features: this.points.map((x, index) => {
@@ -66,14 +99,15 @@
               properties: {
                 style: {
                   radius: this.cRadius[index],
-                  fillColor: this.cFillColor[index],
+                  fillColors: this.cFillColors,
                   fillOpacity: this.cFillOpacity[index],
                   weight: this.cWeight[index],
                   color: this.cColor[index],
                   opacity: this.cOpacity[index],
                 },
-                values: [20, 20, 20, 30, 5, 10, 12],
-                text: "Point " + index
+                values: l.pieFields.reduce((o, f) => (o[f] = d[f][index], o), {}),
+                text: d[l.pieTitle] ? d[l.pieTitle][index] : null,
+                unit: l.pieUnit,
               },
               id: index
             }
@@ -82,6 +116,7 @@
       },
       options: function() {
         const svgPie = this.svgPie
+        const tooltipPie = this.tooltipPie
         return {
           style: function(feature) {
             return feature.properties && feature.properties.style;
@@ -93,7 +128,27 @@
                 icon: divIcon({
                   html: svgPie(feature.properties.values, s),
                   iconSize: [s.radius*2*1.2, s.radius*2*1.2],
-                  iconAnchor: [s.radius, s.radius]
+                  iconAnchor: [s.radius*1.2, s.radius*1.2]
+                }),
+              }
+            ).bindTooltip(tooltipPie(feature.properties))
+          },
+        }
+      },
+      labelOptions: function() {
+        const labelPie = this.labelPie
+        return {
+          style: function(feature) {
+            return feature.properties && feature.properties.style;
+          },
+          pointToLayer: function(feature, latlng) {
+            // const s = feature.properties.style
+            return marker(latlng,
+              {
+                icon: divIcon({
+                  html: labelPie(feature.properties),
+                  iconSize: ["auto", "auto"],
+                  // iconAnchor: [s.radius, s.radius]
                 }),
               }
             )
@@ -106,8 +161,15 @@
         const d = this.$store.state.datasets[l.dataset]
         if (l.fixedRadius) {
           return tf.fill([p.length], l.radius).dataSync()
-        } else if (l.radiusBase && d[l.radiusBase]) {
-          const t = tf.tensor1d(d[l.radiusBase])
+        } else if (l.pieFields.length > 0) {
+          const totalValue = p.map((x, i) => {
+            let v = 0
+            for (let f of l.pieFields) {
+              v += d[f][i]
+            }
+            return v
+          })
+          const t = tf.tensor1d(totalValue)
           const r = tf.add(
             l.radius[0],
             tf.mul(
@@ -120,19 +182,13 @@
           return tf.fill([p.length], l.radius[1]).dataSync()
         }
       },
-      cFillColor: function() {
-        const p = this.points
-        const l = this.layer
-        const d = this.$store.state.datasets[l.dataset]
-        if (l.fixedFillColor) {
-          return new Array(p.length).fill(l.fillColor)
-        } else if (l.fillColorBase && d[l.fillColorBase]) {
-          const scale = chroma.scale(l.fillColorscale).domain([Math.min(...d[l.fillColorBase]), Math.max(...d[l.fillColorBase])])
-          // .limits(d[l.fillColorBase], "e", )
-          return d[l.fillColorBase].map((x) => scale(x).css())
-        } else {
-          return new Array(p.length).fill(l.fillColorscale[l.fillColorscale.length - 1])
-        }
+      cFillColors: function() {
+        return this.layer.fillColorscale
+        // const l = this.layer
+        // const d = this.$store.state.datasets[l.dataset]
+        // const scale = chroma.scale(l.fillColorscale).domain([Math.min(...d[l.fillColorBase]), Math.max(...d[l.fillColorBase])])
+        // // .limits(d[l.fillColorBase], "e", )
+        // return d[l.fillColorBase].map((x) => scale(x).css())
       },
       cWeight: function() {
         const p = this.points
@@ -188,3 +244,26 @@
     },
   }
 </script>
+
+<style>
+  .color-sample {
+    height: 1em;
+    width: 1em;
+    display: inline-block;
+    margin-right: 1em;
+  }
+  .marker-tooltip {
+    text-align: left;
+    padding: 0 1em;
+  }
+  .marker-tooltip-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+  }
+  .pie-label {
+    white-space: nowrap;
+    font-size: 1rem;
+    font-weight: 600;
+  }
+</style>

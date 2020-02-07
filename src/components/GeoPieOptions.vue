@@ -2,12 +2,75 @@
   <div id="scatter-options">
 
     <div class="card-section" is="v-collapse-wrapper" :active="true">
-      <div class="section-title" v-collapse-toggle>Required</div>
+      <div class="section-title" v-collapse-toggle>Data Fields</div>
       <div v-collapse-content>
         <span class="form-label">Latitude*</span>
-        <cool-select :items="fields" v-model="latField" item-value="name" item-text="name" placeholder="Select one..." />
+        <multiselect
+          placeholder="Select one..."
+          track-by="name"
+          label="name"
+          :options="fields"
+          :searchable="false"
+          :allow-empty="false"
+          deselect-label="✓"
+          select-label=""
+          selected-label="✓"
+          :close-on-select="true"
+          :show-labels="true"
+          :value="fields.find(x => x.name === latField)"
+          @input="latField = $event.name"
+        />
         <span class="form-label">Longitude*</span>
-        <cool-select :items="fields" v-model="lngField" item-value="name" item-text="name" placeholder="Select one..."/>
+        <multiselect
+          placeholder="Select one..."
+          track-by="name"
+          label="name"
+          :options="fields"
+          :searchable="false"
+          :allow-empty="false"
+          deselect-label="✓"
+          select-label=""
+          selected-label="✓"
+          :close-on-select="true"
+          :show-labels="true"
+          :value="fields.find(x => x.name === lngField)"
+          @input="lngField = $event.name"
+        />
+        <span class="form-label">Pie Fields*</span>
+        <multiselect
+          track-by="name"
+          placeholder="Select some..."
+          label="name"
+          :options="fields"
+          :searchable="false"
+          :allow-empty="true"
+          deselect-label="x"
+          select-label="+"
+          selected-label="✓"
+          :close-on-select="false"
+          :multiple="true"          
+          :value="fields.filter(x => pieFields.indexOf(x.name) >= 0)"
+          @input="pieFields = $event.map(x => x.name)"
+        />
+        <span class="form-label">Pie Title</span>
+        <switcher @switch="showLabels = $event" :initialValue="showLabels" before="Add Labels on Map" />
+        <multiselect
+          placeholder="Select one..."
+          track-by="name"
+          label="name"
+          :options="fields"
+          :searchable="false"
+          :allow-empty="true"
+          deselect-label="x"
+          select-label=""
+          selected-label="✓"
+          :close-on-select="true"
+          :show-labels="true"
+          :value="fields.find(x => x.name === pieTitle)"
+          @input="pieTitle = $event? $event.name : null"
+        />
+        <span class="form-label">Unit</span>
+        <input type="text" v-model="pieUnit" class="options-input"/>
       </div>
     </div>
 
@@ -15,22 +78,10 @@
       <div class="section-title" v-collapse-toggle>Fill</div>
       <div v-collapse-content>
         <span class="form-label">Size</span>
-        <switcher @switch="handleRadiusBase" />
+        <switcher @switch="handleRadiusBase" :initialValue="!fixedRadius" before="Based on Total Value" />
         <vue-slider :min="0" :max="100" v-model="radius" :lazy="true" />
-        <template v-if="!fixedRadius">
-          <span class="form-label">Size Based On</span>
-          <cool-select :items="fields" v-model="radiusBase" item-value="name" item-text="name" placeholder="Select one..."/>
-        </template>
         <span class="form-label">Color</span>
-        <switcher @switch="fixedFillColor = !$event" />
-        <template v-if="fixedFillColor">
-          <color-picker :name="'fillColorPicker' + indexLayer" :value="fillColor" @pick-color="fillColor = $event" />
-        </template>
-        <template v-else>
-          <color-scale @pick-colorscale="fillColorscale = $event.colors; fillColorscaleName=$event.name" :scale-name="fillColorscaleName"/>
-          <span class="form-label">Color Based On</span>
-          <cool-select :items="fields" v-model="fillColorBase" item-value="name" item-text="name" placeholder="Select one..."/>
-        </template>
+        <color-scale @pick-colorscale="handlePickFillColorscale" :scale-name="fillColorscaleName"/>
         <span class="form-label">Opacity</span>
         <vue-slider :min="0" :max="1" :interval="0.1" v-model="fillOpacity" :lazy="true" />
       </div>
@@ -40,7 +91,7 @@
       <div class="section-title" v-collapse-toggle>Outline</div>
       <div v-collapse-content>
         <span class="form-label">Width</span>
-        <switcher @switch="handleWeightBase" />
+        <switcher @switch="handleWeightBase" :initialValue="!fixedWeight" />
         <vue-slider :min="0" :max="20" :interval="0.2" v-model="weight" :lazy="true" />
         <template v-if="!fixedWeight">
           <span class="form-label">Width Based On</span>
@@ -49,9 +100,9 @@
 
         <template v-if="!fixedWeight || weight > 0">
           <span class="form-label">Color</span>
-          <switcher @switch="fixedColor = !$event" />
+          <switcher @switch="fixedColor = !$event" :initialValue="!fixedColor" />
           <template v-if="fixedColor">
-            <color-picker :name="'colorPicker' + indexLayer" :value="color" @pick-color="color = $event" />
+            <color-picker :name="'colorPicker' + indexLayer" :value="color" @pick-color="color = $event.hex" />
           </template>
           <template v-else>
             <color-scale @pick-colorscale="colorscale = $event.colors; colorscaleName=$event.name" :scale-name="colorscaleName"/>
@@ -71,9 +122,17 @@
 <script>
 import VueSlider from 'vue-slider-component'
 import { CoolSelect } from 'vue-cool-select'
+import Multiselect from 'vue-multiselect'
 import ColorPicker from './ColorPicker.vue'
 import Switcher from './Switcher.vue'
 import ColorScale from './ColorScale.vue'
+
+const computedFields = [
+  "latField", "lngField", "fixedRadius", "radius", "fixedWeight", "weight", "weightBase",
+  "opacity", "fillOpacity", "fillColorscale", "fillColorscaleName",
+  "fixedColor", "color", "colorscale", "colorscaleName", "colorBase",
+  "pieFields", "pieTitle", "pieUnit", "showLabels",
+]
 
 export default {
   name: "GeoPieOptions",
@@ -83,177 +142,39 @@ export default {
     ColorPicker,
     Switcher,
     ColorScale,
+    Multiselect,
   },
   props: ["indexLayer"],
-  computed: {    
+  computed: {
+    testF: function() {
+      return this.fields.filter(x => this.pieFields.indexOf(x.name) >= 0)
+      // const f = this.fields.filter(x => this.pieFields.indexOf(x.name) >= 0)
+      // if (this.pieFields) {
+      //   return f
+      // }
+      // return []
+    },
     fields: function() {
       const dn = this.$store.state.layers[this.indexLayer].dataset
       const d = this.$store.state.datasets[dn]
       if (d===undefined) {return []}
       return Object.keys(d).map((d) => {return {name: d}})
     },
-    latField: {
+    ...computedFields.reduce((a,b)=> (a[b]={
       get: function() {
-        return this.$store.state.layers[this.indexLayer].latField
+        return this.$store.state.layers[this.indexLayer][b]
       },
-      set: function(latField) {
-        this.$store.commit("setLatField", {indexLayer: this.indexLayer, latField: latField})
+      set: function(x) {
+        this.$store.commit("setLayerField", {indexLayer: this.indexLayer, field: b, value: x})
       }
-    },
-    lngField: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].lngField
-      },
-      set: function(lngField) {
-        this.$store.commit("setLngField", {indexLayer: this.indexLayer, lngField: lngField})
-      }
-    },
-    fixedRadius: {      
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].fixedRadius
-      },
-      set: function(fixedRadius) {
-        this.$store.commit("setScatterFixedRadius", {indexLayer: this.indexLayer, fixedRadius: fixedRadius})
-      }
-    },
-    radius: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].radius
-      },
-      set: function(radius) {
-        this.$store.commit("setScatterRadius", {indexLayer: this.indexLayer, radius: radius})
-      }
-    },
-    radiusBase: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].radiusBase
-      },
-      set: function(radiusBase) {
-        this.$store.commit("setScatterRadiusBase", {indexLayer: this.indexLayer, radiusBase: radiusBase})
-      }
-    },
-    fixedWeight: {      
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].fixedWeight
-      },
-      set: function(fixedWeight) {
-        this.$store.commit("setScatterFixedWeight", {indexLayer: this.indexLayer, fixedWeight: fixedWeight})
-      }
-    },
-    weight: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].weight
-      },
-      set: function(weight) {
-        this.$store.commit("setScatterWeight", {indexLayer: this.indexLayer, weight: weight})
-      }
-    },
-    weightBase: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].weightBase
-      },
-      set: function(weightBase) {
-        this.$store.commit("setScatterWeightBase", {indexLayer: this.indexLayer, weightBase: weightBase})
-      }
-    },
-    opacity: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].opacity
-      },
-      set: function(opacity) {
-        this.$store.commit("setScatterOpacity", {indexLayer: this.indexLayer, opacity: opacity})
-      }
-    },
-    fillOpacity: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].fillOpacity
-      },
-      set: function(fillOpacity) {
-        this.$store.commit("setScatterFillOpacity", {indexLayer: this.indexLayer, fillOpacity: fillOpacity})
-      }
-    },
-    fixedFillColor: {      
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].fixedFillColor
-      },
-      set: function(fixedFillColor) {
-        this.$store.commit("setScatterFixedFillColor", {indexLayer: this.indexLayer, fixedFillColor: fixedFillColor})
-      }
-    },
-    fillColor: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].fillColor
-      },
-      set: function(fillColor) {
-        this.$store.commit("setScatterFillColor", {indexLayer: this.indexLayer, fillColor: fillColor.hex})
-      }
-    },
-    fillColorscale: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].fillColorscale
-      },
-      set: function(fillColorscale) {
-        this.$store.commit("setScatterFillColorscale", {indexLayer: this.indexLayer, fillColorscale: fillColorscale})
-      }
-    },
-    fillColorscaleName: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].fillColorscaleName
-      },
-      set: function(fillColorscaleName) {
-        this.$store.commit("setScatterFillColorscaleName", {indexLayer: this.indexLayer, fillColorscaleName: fillColorscaleName})
-      }
-    },
-    fillColorBase: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].fillColorBase
-      },
-      set: function(fillColorBase) {
-        this.$store.commit("setScatterFillColorBase", {indexLayer: this.indexLayer, fillColorBase: fillColorBase})
-      }
-    },
-    fixedColor: {      
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].fixedColor
-      },
-      set: function(fixedColor) {
-        this.$store.commit("setScatterFixedColor", {indexLayer: this.indexLayer, fixedColor: fixedColor})
-      }
-    },
-    color: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].color
-      },
-      set: function(color) {
-        this.$store.commit("setScatterColor", {indexLayer: this.indexLayer, color: color.hex})
-      }
-    },
-    colorscale: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].colorscale
-      },
-      set: function(colorscale) {
-        this.$store.commit("setScatterColorscale", {indexLayer: this.indexLayer, colorscale: colorscale})
-      }
-    },
-    colorscaleName: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].colorscaleName
-      },
-      set: function(colorscaleName) {
-        this.$store.commit("setScatterColorscaleName", {indexLayer: this.indexLayer, colorscaleName: colorscaleName})
-      }
-    },
-    colorBase: {
-      get: function() {
-        return this.$store.state.layers[this.indexLayer].colorBase
-      },
-      set: function(colorBase) {
-        this.$store.commit("setScatterColorBase", {indexLayer: this.indexLayer, colorBase: colorBase})
-      }
-    },
+    },a),{}),
   },
   methods: {
+    handlePickFillColorscale: function(event) {
+      window.console.log('here', event)
+      this.fillColorscale = event.colors
+      this.fillColorscaleName = event.name
+    },
     handleRadiusBase: function (event) {
       this.fixedRadius = !event
       if (event) {
