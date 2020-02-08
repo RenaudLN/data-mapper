@@ -18,6 +18,7 @@ const scatterLayerDefaults = {
   radiusBase: null,
 
   fixedFillColor: true,
+  customFillColor: false,
   fillColor: "#00f",
   fillColorscaleName: "viridis",
   fillColorscale: [],
@@ -31,6 +32,7 @@ const scatterLayerDefaults = {
   
 
   fixedColor: true,
+  customColor: false,
   color: "#000",
   colorscaleName: "greys",
   colorscale: [],

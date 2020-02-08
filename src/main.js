@@ -40,6 +40,7 @@ const store = new Vuex.Store({
         radiusBase: null,
 
         fixedFillColor: true,
+        customFillColor: false,
         fillColor: "#00f",
         fillColorscaleName: "viridis",
         fillColorscale: [],
@@ -54,6 +55,7 @@ const store = new Vuex.Store({
         
       
         fixedColor: true,
+        customColor: false,
         color: "#000",
         colorscaleName: "greys",
         colorscale: [],

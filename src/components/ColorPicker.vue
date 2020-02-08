@@ -2,7 +2,7 @@
   <div>
     <div
       class="color-picker"
-      :style="'background-color: ' + value + ';'"
+      :style="'background-color: ' + color.hex + ';'"
       v-popover.right="{name: name}"
     />
     <popover :name="name">
@@ -19,7 +19,7 @@ export default {
   props: ["name", "value"],
   data() {
     return {
-      color: this.value
+      color: {hex: this.value}
     }
   }
 }

@@ -1,5 +1,10 @@
 <template>
   <div>
+    <!-- <div>
+      {{JSON.stringify(scaleName)}}
+      {{JSON.stringify(initialColors)}}
+      {{JSON.stringify(initialCustom)}}
+    </div> -->
     <cool-select
       :items="brewerScales"
       v-model="sName"
@@ -8,10 +13,11 @@
       :placeholder="sName?'':'Select one...'"
       class="colorscale-select"
       @select="pickColorscale"
+      v-if="!custom"
     >
       <template slot="item" slot-scope="{ item: scale }">
         <div class="colorscale-container in-select">
-          <div class="color-div" v-for="(c, i) in scale.colors" :key="i" :style="'background-color: ' + c"/>
+          <div class="color-div" v-for="(c, i) in scale.colors" :key="c + i" :style="'background-color: ' + c"/>
         </div>
       </template>
       <template slot="selection" slot-scope="{ item: scale }">
@@ -20,7 +26,25 @@
         </div>
       </template>
     </cool-select>
-    <switcher alignment="none" before="" after="Custom Colors" />
+    <switcher
+      style="margin: 0 0 .25em 0" alignment="none" before="" after="Custom Colors"
+      @switch="toggleCustom" :initialValue="custom"
+    />
+    <div v-if="custom">
+      <div style="display: flex">
+        <color-picker
+          v-for="(c, i) in customColors" :key="customKeys[i]" :name="'colorPicker' + id + i"
+          :value="c" @pick-color="changeColor($event, i)"
+          style="flex: 1 1 auto"
+        />
+      </div>
+      <div style="display: flex">
+        <div class="delete-color-div" v-for="(c, i) in customColors" :key="customKeys[i]" @click="removeColor(i)">
+          x
+        </div>
+      </div>
+      <div class="add-color-div" @click="addColor">+ Add Color</div>
+    </div>
   </div>
 </template>
 
@@ -29,19 +53,29 @@ import chroma from "chroma-js"
 // import * as tf from '@tensorflow/tfjs';
 import { CoolSelect } from 'vue-cool-select'
 import Switcher from './Switcher.vue'
+import ColorPicker from './ColorPicker.vue'
 
 export default {
   name: "ColorScale",
   components: {
     CoolSelect,
     Switcher,
+    ColorPicker,
   },
-  props: {scaleName: {type: String, default: "viridis"}},
+  props: {
+    scaleName: {type: String, default: "viridis"},
+    initialColors: {type: Array},
+    initialCustom: {type: Boolean, default: false},
+  },
   data () {
     return {
       // nColors: 9,
       isContinuous: false,
       sName: this.scaleName,
+      custom: this.initialCustom,
+      customColors: this.initialColors,
+      customKeys: [...Array(this.initialColors.length).keys()],
+      id: String(Math.round(Math.random() * 1000000)),
     }
   },
   computed: {
@@ -54,32 +88,58 @@ export default {
       })
     },
     colors: function() {
-      if (this.sName !== "custom"){
-        return chroma.brewer[this.sName]
-      } else {
-        return []
-      }
+      return chroma.brewer[this.sName]
     },
-    // colorsBase: function() {
-    //   if (this.scaleName !== "Custom") {
-    //     return chroma.brewer[this.scaleName]
-    //   } else {
-    //     return []
-    //   }
-    // },
   },
   created: function() {
     this.pickColorscale()
   },
-  methods: {
-    pickColorscale: function() {
-      this.$emit('pick-colorscale', {colors: this.colors, name: this.sName})
+  watch: {
+    customColors: function() {
+      window.console.log("Custom colors changed")
+      this.$emit('pick-colorscale', {colors: this.customColors, name: this.sName, custom: this.custom})
+    },
+    colors: function() {
+      window.console.log("Colors:", this.colors)
     }
-    // getColors: function(colors, nColors) {
-    //   const scale = chroma.scale(colors).classes(nColors)
-    //   const t = Array.from(tf.linspace(0, 1, nColors).dataSync())
-    //   return t.map((x) => scale(x).css())
-    // }
+  },
+  methods: {
+    toggleCustom: function(event) {
+      this.custom = event
+      if (event) {
+        this.customColors = [...this.colors]
+      } else {
+        // this.sName = "viridis"
+        this.pickColorscale()
+      }
+      // this.pickColorscale()
+    },
+    changeColor: function(event, i) {
+      let c = [...this.customColors]
+      c[i] = event.hex
+      this.customColors = c
+      // this.pickColorscale()
+    },
+    removeColor: function(i) {
+      this.customKeys.splice(i, 1)
+      this.customColors.splice(i, 1)
+      // this.pickColorscale()
+    },
+    addColor: function() {
+      this.customKeys.push(Math.max(...this.customKeys) + 1)
+      this.customColors.push('#fff')
+    },
+    pickColorscale: function() {
+      window.console.log("Pick Scale: ", this.custom)
+      if (this.custom) {
+        this.$emit('pick-colorscale', {colors: this.customColors, name: this.sName, custom: this.custom})
+      } else {
+      // if (this.colors && this.colors.length > 0) {
+      //   this.customColors = [...this.colors]
+      // }
+        this.$emit('pick-colorscale', {colors: this.colors, name: this.sName, custom: this.custom})
+      }
+    }
   }
 }
 </script>
@@ -101,5 +161,27 @@ export default {
   div.color-div {
     flex: 1 1 auto;
     cursor: pointer;
+  }
+  .add-color-div {
+    font-size: 1rem;
+    margin-top: .25em;
+    cursor: pointer;
+    width: auto;
+    padding: .1em 1em;
+    border-radius: 2px;
+  }
+  .add-color-div:hover {
+    background-color:rgba(0,0,0,0.2);
+    font-weight: 600;
+  }
+  .delete-color-div {
+    flex: 1 1 auto;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .delete-color-div:hover {
+    background-color:rgba(0,0,0,0.2);
+    font-weight: 600;
   }
 </style>

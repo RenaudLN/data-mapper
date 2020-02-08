@@ -27,7 +27,12 @@
           <color-picker :name="'fillColorPicker' + indexLayer" :value="fillColor" @pick-color="fillColor = $event.hex" />
         </template>
         <template v-else>
-          <color-scale @pick-colorscale="fillColorscale = $event.colors; fillColorscaleName=$event.name" :scale-name="fillColorscaleName"/>
+          <color-scale
+            @pick-colorscale="handlePickFillColorscale"
+            :scale-name="fillColorscaleName"
+            :initial-custom="customFillColor"
+            :initial-colors="fillColorscale"
+          />
           <span class="form-label">Color Based On</span>
           <cool-select :items="fields" v-model="fillColorBase" item-value="name" item-text="name" placeholder="Select one..."/>
         </template>
@@ -54,7 +59,12 @@
             <color-picker :name="'colorPicker' + indexLayer" :value="color" @pick-color="color = $event.hex" />
           </template>
           <template v-else>
-            <color-scale @pick-colorscale="colorscale = $event.colors; colorscaleName=$event.name" :scale-name="colorscaleName"/>
+            <color-scale
+              @pick-colorscale="handlePickColorscale"
+              :scale-name="colorscaleName"
+              :initial-custom="customColor"
+              :initial-colors="colorscale"
+            />
             <span class="form-label">Color Based On</span>
             <cool-select :items="fields" v-model="colorBase" item-value="name" item-text="name" placeholder="Select one..."/>
           </template>
@@ -78,7 +88,7 @@ import ColorScale from './ColorScale.vue'
 const computedFields = [
   "latField", "lngField", "fixedRadius", "radius", "radiusBase", "fixedWeight", "weight", "weightBase",
   "opacity", "fillOpacity", "fixedFillColor", "fillColor", "fillColorscale", "fillColorscaleName", "fillColorBase",
-  "fixedColor", "color", "colorscale", "colorscaleName", "colorBase"
+  "fixedColor", "color", "colorscale", "colorscaleName", "colorBase", "customFillColor", "customColor"
 ]
 
 export default {
@@ -108,6 +118,16 @@ export default {
     },a),{}),
   },
   methods: {
+    handlePickFillColorscale: function(event) {
+      this.fillColorscaleName = event.name
+      this.customFillColor = event.custom
+      this.fillColorscale = event.colors
+    },
+    handlePickColorscale: function(event) {
+      this.colorscaleName = event.name
+      this.customColor = event.custom
+      this.colorscale = event.colors
+    },
     handleRadiusBase: function (event) {
       this.fixedRadius = !event
       if (event) {

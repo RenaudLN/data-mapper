@@ -81,7 +81,12 @@
         <switcher @switch="handleRadiusBase" :initialValue="!fixedRadius" before="Based on Total Value" />
         <vue-slider :min="0" :max="100" v-model="radius" :lazy="true" />
         <span class="form-label">Color</span>
-        <color-scale @pick-colorscale="handlePickFillColorscale" :scale-name="fillColorscaleName"/>
+        <color-scale
+          @pick-colorscale="handlePickFillColorscale"
+          :scale-name="fillColorscaleName"
+          :initial-custom="customFillColor"
+          :initial-colors="fillColorscale"
+        />
         <span class="form-label">Opacity</span>
         <vue-slider :min="0" :max="1" :interval="0.1" v-model="fillOpacity" :lazy="true" />
       </div>
@@ -105,7 +110,12 @@
             <color-picker :name="'colorPicker' + indexLayer" :value="color" @pick-color="color = $event.hex" />
           </template>
           <template v-else>
-            <color-scale @pick-colorscale="colorscale = $event.colors; colorscaleName=$event.name" :scale-name="colorscaleName"/>
+            <color-scale
+              @pick-colorscale="handlePickColorscale"
+              :scale-name="colorscaleName"
+              :initial-custom="customColor"
+              :initial-colors="colorscale"
+            />
             <span class="form-label">Color Based On</span>
             <cool-select :items="fields" v-model="colorBase" item-value="name" item-text="name" placeholder="Select one..."/>
           </template>
@@ -131,7 +141,7 @@ const computedFields = [
   "latField", "lngField", "fixedRadius", "radius", "fixedWeight", "weight", "weightBase",
   "opacity", "fillOpacity", "fillColorscale", "fillColorscaleName",
   "fixedColor", "color", "colorscale", "colorscaleName", "colorBase",
-  "pieFields", "pieTitle", "pieUnit", "showLabels",
+  "pieFields", "pieTitle", "pieUnit", "showLabels", "customFillColor", "customColor",
 ]
 
 export default {
@@ -171,9 +181,14 @@ export default {
   },
   methods: {
     handlePickFillColorscale: function(event) {
-      window.console.log('here', event)
-      this.fillColorscale = event.colors
       this.fillColorscaleName = event.name
+      this.customFillColor = event.custom
+      this.fillColorscale = event.colors
+    },
+    handlePickColorscale: function(event) {
+      this.colorscaleName = event.name
+      this.customColor = event.custom
+      this.colorscale = event.colors
     },
     handleRadiusBase: function (event) {
       this.fixedRadius = !event
