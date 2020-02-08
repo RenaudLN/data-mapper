@@ -26,6 +26,11 @@
       LFeatureGroup,
       LGeoJson,
     },
+    data () {
+      return {        
+        customLabelPos: []
+      }
+    },
     methods: {
       svgPie: function(valuesObject, s) {
         const values = Object.values(valuesObject);
@@ -133,22 +138,23 @@
       },
       labelOptions: function() {
         const labelPie = this.labelPie
+        let labelPos = this.customLabelPos
         return {
           style: function(feature) {
             return feature.properties && feature.properties.style;
           },
           pointToLayer: function(feature, latlng) {
-            // const s = feature.properties.style
-            return marker(latlng,
+            return marker(labelPos[feature.id]?labelPos[feature.id]:latlng,
               {
                 icon: divIcon({
                   html: labelPie(feature.properties),
                   iconSize: ["auto", "auto"],
-                  // iconAnchor: [s.radius, s.radius]
                 }),
                 draggable: true,
               }
-            )
+            ).on("dragend", function(event) {
+              labelPos[feature.id] = [event.target._latlng.lat, event.target._latlng.lng]
+            })
           },
         }
       },
