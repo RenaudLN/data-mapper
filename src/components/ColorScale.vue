@@ -116,7 +116,6 @@ export default {
       let c = [...this.customColors]
       c[i].color = event.hex
       this.customColors = c
-
       // this.customColors[i].color = event.hex
 
       // const cn = Object.assign({}, this.customColors[i], {color: event.hex})
