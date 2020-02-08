@@ -6,7 +6,7 @@
       {{JSON.stringify(initialCustom)}}
     </div> -->
     <cool-select
-      :items="brewerScales"
+      :items="allScales"
       v-model="sName"
       item-value="name"
       item-text="name"
@@ -33,13 +33,13 @@
     <div v-if="custom">
       <div style="display: flex">
         <color-picker
-          v-for="(c, i) in customColors" :key="customKeys[i]" :name="'colorPicker' + id + i"
-          :value="c" @pick-color="changeColor($event, i)"
+          v-for="(c, i) in customColors" :key="c.id" :name="'colorPicker' + id + c.id"
+          :value="c.color" @pick-color="changeColor($event, i)"
           style="flex: 1 1 auto"
         />
       </div>
       <div style="display: flex">
-        <div class="delete-color-div" v-for="(c, i) in customColors" :key="customKeys[i]" @click="removeColor(i)">
+        <div class="delete-color-div" v-for="(c, i) in customColors" :key="c.id" @click="removeColor(i)">
           x
         </div>
       </div>
@@ -49,11 +49,10 @@
 </template>
 
 <script>
-import chroma from "chroma-js"
-// import * as tf from '@tensorflow/tfjs';
 import { CoolSelect } from 'vue-cool-select'
 import Switcher from './Switcher.vue'
 import ColorPicker from './ColorPicker.vue'
+import {scales} from '../colors.json';
 
 export default {
   name: "ColorScale",
@@ -63,7 +62,7 @@ export default {
     ColorPicker,
   },
   props: {
-    scaleName: {type: String, default: "viridis"},
+    scaleName: {type: String, default: "Viridis"},
     initialColors: {type: Array},
     initialCustom: {type: Boolean, default: false},
   },
@@ -73,61 +72,67 @@ export default {
       isContinuous: false,
       sName: this.scaleName,
       custom: this.initialCustom,
-      customColors: this.initialColors,
-      customKeys: [...Array(this.initialColors.length).keys()],
+      customColors: this.initialColors.map((c, i) => {return {color: c, id: i}}),
       id: String(Math.round(Math.random() * 1000000)),
     }
   },
   computed: {
-    brewerScales: function() {
-      return Object.keys(chroma.brewer).map((x) => {
+    allScales: function() {
+      return Object.keys(scales).map((x) => {
         return {
           name: x,
-          colors: chroma.brewer[x]
+          colors: scales[x]
         }
       })
     },
     colors: function() {
-      return chroma.brewer[this.sName]
+      return scales[this.sName]
     },
+    nextId: function() {
+      return Math.max(0, ...this.customColors.map(x => x.id)) + 1
+    },
+    customColors2: function() {
+      return this.customColors.map(x => x.color)
+    }
   },
   created: function() {
     this.pickColorscale()
   },
   watch: {
     customColors: function() {
-      this.$emit('pick-colorscale', {colors: this.customColors, name: this.sName, custom: this.custom})
+      window.console.log(this.customColors)
+      this.$emit('pick-colorscale', {colors: this.customColors2, name: this.sName, custom: this.custom})
     },
   },
   methods: {
     toggleCustom: function(event) {
       this.custom = event
       if (event) {
-        this.customColors = [...this.colors]
+        this.customColors = this.colors.map((c, i) => {return {color: c, id: i + this.nextId}})
       } else {
-        // this.sName = "viridis"
         this.pickColorscale()
       }
-      // this.pickColorscale()
     },
     changeColor: function(event, i) {
       let c = [...this.customColors]
-      c[i] = event.hex
+      c[i].color = event.hex
       this.customColors = c
-      // this.pickColorscale()
+      
+      // this.customColors[i].color = event.hex
+
+      // const cn = Object.assign({}, this.customColors[i], {color: event.hex})
+      // window.console.log(cn)
+      // this.customColors = this.customColors.map((c, j) => j==i ? c : cn)
     },
     removeColor: function(i) {
-      this.customKeys.splice(i, 1)
       this.customColors.splice(i, 1)
-      // this.pickColorscale()
     },
     addColor: function() {
-      this.customKeys.push(Math.max(...this.customKeys) + 1)
-      this.customColors.push('#fff')
+      this.customColors.push({color: '#fff', id:this.nextId})
     },
     pickColorscale: function() {
       if (this.custom) {
-        this.$emit('pick-colorscale', {colors: this.customColors, name: this.sName, custom: this.custom})
+        this.$emit('pick-colorscale', {colors: this.customColors2, name: this.sName, custom: this.custom})
       } else {
         this.$emit('pick-colorscale', {colors: this.colors, name: this.sName, custom: this.custom})
       }

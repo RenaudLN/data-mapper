@@ -42,7 +42,7 @@ const store = new Vuex.Store({
         fixedFillColor: true,
         customFillColor: false,
         fillColor: "#00f",
-        fillColorscaleName: "viridis",
+        fillColorscaleName: "Viridis",
         fillColorscale: [],
         fillReverseScale: false,
         fillColorBase: null,
@@ -57,7 +57,7 @@ const store = new Vuex.Store({
         fixedColor: true,
         customColor: false,
         color: "#000",
-        colorscaleName: "greys",
+        colorscaleName: "Greys",
         colorscale: [],
         reverseScale: false,
         colorBase: null,
@@ -73,7 +73,7 @@ const store = new Vuex.Store({
   },
   mutations: {
     addLayer (state) {
-      window.console.log('addLayer')
+      // window.console.log('addLayer')
       state.layers.push({
         ...baseLayerDefaults,
         ...scatterLayerDefaults
@@ -84,11 +84,11 @@ const store = new Vuex.Store({
     },
     setLayerField (state, payload) {
       let {indexLayer, field, value} = payload
-      window.console.log("set layer", indexLayer, "field", field, value)
+      // window.console.log("set layer", indexLayer, "field", field, value)
       state.layers[indexLayer][field] = value
     },
     addDataset (state, payload) {
-      window.console.log("add dataset", payload)
+      // window.console.log("add dataset", payload)
       state.datasets = Object.assign({}, state.datasets, {[payload.name]: payload.data})
     },
   }
