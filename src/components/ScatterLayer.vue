@@ -17,8 +17,6 @@
   } from 'leaflet';
   import chroma from "chroma-js"
   import * as tf from '@tensorflow/tfjs'
-  // const t = tf.fill([10], 2)
-  // window.console.log(tf.add(tf.mul(5, tf.sqrt(tf.div(t, t.max()))), 3).dataSync())
 
   const myRenderer = canvas({ padding: 0.5 });
 
@@ -110,7 +108,6 @@
         if (l.fixedFillColor) {
           return new Array(p.length).fill(l.fillColor)
         } else if (l.fillColorBase && d[l.fillColorBase]) {
-          window.console.log("HERE", l.fillColorscale)
           const scale = chroma.scale(l.fillColorscale).domain([Math.min(...d[l.fillColorBase]), Math.max(...d[l.fillColorBase])])
           // .limits(d[l.fillColorBase], "e", )
           return d[l.fillColorBase].map((x) => scale(x).css())

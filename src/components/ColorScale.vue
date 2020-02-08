@@ -96,12 +96,8 @@ export default {
   },
   watch: {
     customColors: function() {
-      window.console.log("Custom colors changed")
       this.$emit('pick-colorscale', {colors: this.customColors, name: this.sName, custom: this.custom})
     },
-    colors: function() {
-      window.console.log("Colors:", this.colors)
-    }
   },
   methods: {
     toggleCustom: function(event) {
@@ -130,13 +126,9 @@ export default {
       this.customColors.push('#fff')
     },
     pickColorscale: function() {
-      window.console.log("Pick Scale: ", this.custom)
       if (this.custom) {
         this.$emit('pick-colorscale', {colors: this.customColors, name: this.sName, custom: this.custom})
       } else {
-      // if (this.colors && this.colors.length > 0) {
-      //   this.customColors = [...this.colors]
-      // }
         this.$emit('pick-colorscale', {colors: this.colors, name: this.sName, custom: this.custom})
       }
     }

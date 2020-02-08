@@ -18,10 +18,6 @@
   } from 'leaflet';
   import chroma from "chroma-js"
   import * as tf from '@tensorflow/tfjs'
-  // const t = tf.fill([10], 2)
-  // window.console.log(tf.add(tf.mul(5, tf.sqrt(tf.div(t, t.max()))), 3).dataSync())
-
-  // const myRenderer = canvas({ padding: 0.5 });
 
   export default {
     name: "GeoPieLayer",
@@ -150,6 +146,7 @@
                   iconSize: ["auto", "auto"],
                   // iconAnchor: [s.radius, s.radius]
                 }),
+                draggable: true,
               }
             )
           },

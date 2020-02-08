@@ -26,7 +26,6 @@ export default {
       this.$store.commit("addLayer")
     },
     handleUpload: function() {
-      window.console.log('selected a file');
       let file = this.$refs.upload.files[0];
       if(!file || file.name.slice(file.name.length-4, file.name.length) !== ".csv") {
         this.$dlg.toast('Only csv file type is supported.', {
@@ -45,7 +44,6 @@ export default {
         const df2 = df.chain(
           ...columns.map(col => row => row.set(col, Number(isNumeric(row.get(col)))))
         )
-        window.console.log(columns.map(col => df2.stat.sum(col) / df2.count()))
         df = df.castAll(columns.map(col => df2.stat.sum(col) / df2.count() > 0.75 ? Number : String))
         self.$store.commit("addDataset", {name: file.name, data: df.toDict()})
         self.$dlg.toast('Dataset was added successfully!', {

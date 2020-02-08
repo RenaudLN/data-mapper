@@ -28,7 +28,7 @@
         </svg>
       </div>
       <div v-if="!layer.fixedRadius">
-        <div style="transform: translateY(-50%);">
+        <div style="transform: translateY(-50%); white-space: nowrap">
           {{maxValue}} {{layer.pieUnit}}
         </div>
         <div
