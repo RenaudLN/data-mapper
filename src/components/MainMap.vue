@@ -6,7 +6,7 @@
   >
     <l-tile-layer :url="tiles.url" :options="tiles.options"/>
     <div :is="l.type + '-layer'" :layer="l" :indexLayer="i" v-for="(l, i) in layers" :key="i" />
-    <l-control :position="'topright'">
+    <l-control :position="'bottomright'">
       <map-legend :layers="layers"/>
     </l-control>
     <print-control />

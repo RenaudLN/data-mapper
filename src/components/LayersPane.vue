@@ -9,7 +9,7 @@
 
 <script>
 import LayerOptions from "./LayerOptions.vue"
-import DataFrame from 'dataframe-js';
+import DataFrame from 'dataframe-js'
 
 export default {
   name: "LayersPane",

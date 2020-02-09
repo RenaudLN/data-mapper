@@ -7,6 +7,7 @@ import VModal from 'vue-js-modal'
 import Popover  from 'vue-js-popover'
 import VueCollapse from 'vue2-collapse'
 import VDialogs from 'v-dialogs'
+import {biogas_pies} from './biogas_pies.json'
 
 
 Vue.config.productionTip = false
@@ -17,46 +18,42 @@ Vue.use(Popover)
 Vue.use(VueCollapse)
 Vue.use(VDialogs, {language: "en"})
 
-const N1 = 20
+
 const store = new Vuex.Store({
   state: {
     datasets: {
-      "Sample data": {
-        lat: Array.from({length: N1}, () => Math.random() * 160 - 80),
-        lon: Array.from({length: N1}, () => Math.random() * 360 - 180),
-        value: Array.from({length: N1}, () => Math.random() * 10 + 0),
-      },
+      biogas_pies
     },
     layers: [
       {
-        name: "Test",
-        type: "Scatter",
-        dataset: "Sample data",
-        latField: "lat",
-        lngField: "lon",
+        name: "Biogas potential",
+        type: "Geo-Pie",
+        dataset: "biogas_pies",
+        latField: "Latitude",
+        lngField: "Longitude",
 
-        fixedRadius: true,
-        radius: 18,
+        fixedRadius: false,
+        radius: [10, 40],
         radiusBase: null,
 
         fixedFillColor: true,
         customFillColor: false,
         fillColor: "#0000ff",
-        fillColorscaleName: "Viridis",
+        fillColorscaleName: "Enea",
         fillColorscale: [],
         fillReverseScale: false,
         fillColorBase: null,
 
-        fillOpacity: 0.8,
+        fillOpacity: 1,
 
         fixedWeight: true,
-        weight: 2,
+        weight: 10,
         weightBase: null,
         
       
         fixedColor: true,
         customColor: false,
-        color: "#000000",
+        color: "#ffffff",
         colorscaleName: "Greys",
         colorscale: [],
         reverseScale: false,
@@ -64,9 +61,9 @@ const store = new Vuex.Store({
 
         opacity: 1,
 
-        pieFields: ["value"],
-        pieTitle: null,
-        pieUnit: '',
+        pieFields: ["Agricole & industrielle", "Micro-méthanisation", "ISDND", "STEP"],
+        pieTitle: "Country",
+        pieUnit: 'TWh',
         showLabels: true,
         labelOffsets: [],
       }

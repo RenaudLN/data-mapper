@@ -285,5 +285,6 @@
     font-size: 1rem;
     font-weight: 600;
     cursor: move;
+    color: #000;
   }
 </style>

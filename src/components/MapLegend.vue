@@ -22,6 +22,9 @@
     padding: 1em 2em;
     text-align: left;
     -webkit-font-smoothing: antialiased;
+    font-size: 1rem;
+    color: #000;
+    font-weight: 500;
   }
   .legend ul {
     margin: auto 0;
@@ -43,7 +46,7 @@
     margin-left: 1em;
   }
   .legend-item-title {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
     margin-bottom: 0.5em;
   }
