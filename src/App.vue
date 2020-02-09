@@ -8,9 +8,7 @@
 <script>
 import MainMap from './components/MainMap.vue'
 import Sidebar from './components/Sidebar.vue'
-// import 'vue-slider-component/theme/material.css'
 import 'vue-slider-component/theme/default.css'
-import "vue-cool-select/dist/themes/material-design.css"
 import "vue-multiselect/dist/vue-multiselect.min.css"
 
 export default {

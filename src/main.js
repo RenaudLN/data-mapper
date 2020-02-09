@@ -2,8 +2,6 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import App from './App.vue'
 import {baseLayerDefaults, scatterLayerDefaults} from './LayerDefaults.js'
-import { CoolSelectPlugin } from "vue-cool-select"
-import VModal from 'vue-js-modal'
 import Popover  from 'vue-js-popover'
 import VueCollapse from 'vue2-collapse'
 import VDialogs from 'v-dialogs'
@@ -12,8 +10,6 @@ import {biogas_pies} from './biogas_pies.json'
 
 Vue.config.productionTip = false
 Vue.use(Vuex)
-Vue.use(CoolSelectPlugin)
-Vue.use(VModal)
 Vue.use(Popover)
 Vue.use(VueCollapse)
 Vue.use(VDialogs, {language: "en"})
