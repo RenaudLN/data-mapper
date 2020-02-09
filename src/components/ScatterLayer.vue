@@ -22,7 +22,7 @@
 
   export default {
     name: "ScatterLayer",
-    props: ["layer"],
+    props: ["layer", "indexLayer"],
     components: {
       LFeatureGroup,
       LGeoJson,

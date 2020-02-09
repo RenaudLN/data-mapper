@@ -21,15 +21,10 @@
 
   export default {
     name: "GeoPieLayer",
-    props: ["layer"],
+    props: ["layer", "indexLayer"],
     components: {
       LFeatureGroup,
       LGeoJson,
-    },
-    data () {
-      return {        
-        customLabelPos: []
-      }
     },
     methods: {
       svgPie: function(valuesObject, s) {
@@ -74,17 +69,23 @@
         tooltip += '</ul></div>'
         return tooltip
       },
-      labelPie(p) {
+      labelPie(p, offset) {
         const values = Object.values(p.values)
         const totalValue = tf.tensor(values).sum().dataSync()
         let label = '<div style="background-color: rgba(255,255,255,0.75); width: auto; padding: 0.15em 0.5em;'
-        label += 'transform: translate(-50%, -100%) translateY(' + (-p.style.radius-2) + 'px);" class="pie-label">'
+        label += 'transform: translate(-50%, -100%) translateY(' + (-p.style.radius-2) + 'px)'
+        label += offset ? ' translate(' + offset.x + 'px, ' + offset.y + 'px);"' : ';"'
+        label += ';" class="pie-label">'
         label += p.text?p.text+' <br>':''
         label += Number(totalValue).toPrecision(3) + ' ' + p.unit + '</div>'
+        // window.console.log("HERE", offset, label)
         return label
       }
     },
     computed: {
+      labelOffsets: function() {
+        return this.$store.state.layers[this.indexLayer].labelOffsets
+      },
       geojson: function() {
         const l = this.layer
         const d = this.$store.state.datasets[l.dataset]
@@ -106,7 +107,7 @@
                   color: this.cColor[index],
                   opacity: this.cOpacity[index],
                 },
-                values: l.pieFields.reduce((o, f) => (o[f] = d[f][index], o), {}),
+                values: l.pieFields.reduce((o, f) => (o[f] = d[f]?d[f][index]:undefined, o), {}),
                 text: d[l.pieTitle] ? d[l.pieTitle][index] : null,
                 unit: l.pieUnit,
               },
@@ -138,22 +139,32 @@
       },
       labelOptions: function() {
         const labelPie = this.labelPie
-        let labelPos = this.customLabelPos
+        let labelOffsets = this.labelOffsets
+        const store = this.$store
+        const indexLayer = this.indexLayer
         return {
           style: function(feature) {
             return feature.properties && feature.properties.style;
           },
           pointToLayer: function(feature, latlng) {
-            return marker(labelPos[feature.id]?labelPos[feature.id]:latlng,
+            return marker(latlng,
               {
                 icon: divIcon({
-                  html: labelPie(feature.properties),
+                  html: labelPie(feature.properties, labelOffsets[feature.id]),
                   iconSize: ["auto", "auto"],
                 }),
                 draggable: true,
               }
             ).on("dragend", function(event) {
-              labelPos[feature.id] = [event.target._latlng.lat, event.target._latlng.lng]
+              const start = event.sourceTarget._startPos
+              const end = event.sourceTarget._newPos
+              let newOffsets = [...labelOffsets]
+              newOffsets[feature.id] = {x: end.x - start.x, y: end.y - start.y}
+              if (labelOffsets[feature.id]) {
+                newOffsets[feature.id].x += labelOffsets[feature.id].x
+                newOffsets[feature.id].y += labelOffsets[feature.id].y
+              }
+              store.commit("setLayerField", {indexLayer, field: "labelOffsets", value: newOffsets})
             })
           },
         }

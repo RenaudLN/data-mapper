@@ -5,7 +5,7 @@
     :max-bounds="bounds"
   >
     <l-tile-layer :url="url" />
-    <div :is="l.type + '-layer'" :layer="l" v-for="(l, i) in layers" :key="i" />
+    <div :is="l.type + '-layer'" :layer="l" :indexLayer="i" v-for="(l, i) in layers" :key="i" />
     <l-control :position="'topright'">
       <map-legend :layers="layers"/>
     </l-control>

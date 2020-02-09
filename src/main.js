@@ -64,10 +64,11 @@ const store = new Vuex.Store({
 
         opacity: 1,
 
-        pieFields: [],
+        pieFields: ["value"],
         pieTitle: null,
         pieUnit: '',
-        showLabels: false,
+        showLabels: true,
+        labelOffsets: [],
       }
     ]
   },
@@ -84,7 +85,7 @@ const store = new Vuex.Store({
     },
     setLayerField (state, payload) {
       let {indexLayer, field, value} = payload
-      // window.console.log("set layer", indexLayer, "field", field, value)
+      window.console.log("set layer", indexLayer, "field", field, value)
       state.layers[indexLayer][field] = value
     },
     addDataset (state, payload) {

@@ -7,6 +7,7 @@ const baseLayerDefaults = {
   pieTitle: null,
   pieUnit: '',
   showLabels: false,
+  labelOffsets: [],
 }
 
 const scatterLayerDefaults = {
