@@ -9,9 +9,39 @@
       <div class="card-section">
         <div class="section-title">Basic</div>
         <span class="form-label">Dataset*</span>
-        <cool-select :items="datasets" v-model="dataset" item-value="name" item-text="name" placeholder="Select one..."/>
+          <multiselect
+            placeholder="Select one..."
+            track-by="name"
+            label="name"
+            :options="datasets"
+            :searchable="false"
+            :allow-empty="false"
+            deselect-label="✓"
+            select-label=""
+            selected-label="✓"
+            :close-on-select="true"
+            :show-labels="true"
+            :value="datasets.find(x => x.name === dataset)"
+            @input="dataset = $event.name"
+          />
+        <!-- <cool-select :items="datasets" v-model="dataset" item-value="name" item-text="name" placeholder="Select one..."/> -->
         <span class="form-label">Layer Type*</span>
-        <cool-select :items="layerTypes" v-model="type" item-value="name" item-text="name" placeholder="Select one..."/>
+          <multiselect
+            placeholder="Select one..."
+            track-by="name"
+            label="name"
+            :options="layerTypes"
+            :searchable="false"
+            :allow-empty="false"
+            deselect-label="✓"
+            select-label=""
+            selected-label="✓"
+            :close-on-select="true"
+            :show-labels="true"
+            :value="layerTypes.find(x => x.name === type)"
+            @input="type = $event.name"
+          />
+        <!-- <cool-select :items="layerTypes" v-model="type" item-value="name" item-text="name" placeholder="Select one..."/> -->
       </div>
       <div :is="type+'-options'" :index-layer="indexLayer"/>
     </div>
@@ -21,7 +51,8 @@
 <script>
 import ScatterOptions from "./ScatterOptions.vue"
 import GeoPieOptions from "./GeoPieOptions.vue"
-import { CoolSelect } from "vue-cool-select"
+// import { CoolSelect } from "vue-cool-select"
+import Multiselect from 'vue-multiselect'
 
 const computedFields = ["name", "dataset", "type"]
 
@@ -30,7 +61,8 @@ export default {
   components: {
     ScatterOptions,
     GeoPieOptions,
-    CoolSelect,
+    Multiselect,
+    // CoolSelect,
   },
   props: ["indexLayer"],
   data () {

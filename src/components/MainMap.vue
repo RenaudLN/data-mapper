@@ -4,7 +4,7 @@
     :bounds="bounds"
     :max-bounds="bounds"
   >
-    <l-tile-layer :url="url" />
+    <l-tile-layer :url="tiles.url" :options="tiles.options"/>
     <div :is="l.type + '-layer'" :layer="l" :indexLayer="i" v-for="(l, i) in layers" :key="i" />
     <l-control :position="'topright'">
       <map-legend :layers="layers"/>
@@ -27,6 +27,10 @@
   // import Vue from 'vue'
   import 'leaflet/dist/leaflet.css'
 
+  const computedFields = [
+    "tiles",
+  ]
+
   export default {
     name: "MainMap",
     components: {
@@ -40,32 +44,29 @@
     },
     data () {
       return {
-        url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
-        // zoom: 8,
-        // center: [47.413220, 1],
-        // markerLatLng: [47.413220, -1.219482],
+        // url: 'http://{s}.tile.osm.org/{z}/{x}/{y}.png',
+        // url: 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png',
+        // options: {
+        //   attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+        //   subdomains: 'abcd',
+        //   maxZoom: 19
+        // },
         bounds: latLngBounds([[60, -180], [-60, 180]])
       };
     },
     computed: {
       layers: function() {
         return this.$store.state.layers
-      }
+      },
+      ...computedFields.reduce((a,b)=> (a[b]={
+        get: function() {
+          return this.$store.state.mapOptions[b]
+        },
+        set: function(x) {
+          this.$store.commit("setMapOption", {option: b, value: x})
+        }
+      },a),{}),
     },
-    // mounted () {
-    //   const legend = control({position: "bottomcenter"})
-    //   legend.onAdd = function() {
-    //     let l = DomUtil.create("div", "legend")
-    //     l.innerHTML += "<h4>Tegnforklaring</h4>"
-    //     // const L = Vue.extend(MapLegend)
-    //     // const l = new L({propsData: {layers: this.layers}})
-    //     return l
-    //   }
-    //   legend.addTo(this.$parent.mapObject);
-    //   this.$nextTick(() => {
-    //     this.$emit('ready', legend);
-    //   });
-    // },
   }
 </script>
 

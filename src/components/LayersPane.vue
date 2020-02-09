@@ -12,7 +12,7 @@ import LayerOptions from "./LayerOptions.vue"
 import DataFrame from 'dataframe-js';
 
 export default {
-  name: "Layers",
+  name: "LayersPane",
   components: {
     LayerOptions,
   },

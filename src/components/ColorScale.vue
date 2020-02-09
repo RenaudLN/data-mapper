@@ -1,31 +1,34 @@
 <template>
   <div>
-    <!-- <div>
-      {{JSON.stringify(scaleName)}}
-      {{JSON.stringify(initialColors)}}
-      {{JSON.stringify(initialCustom)}}
-    </div> -->
-    <cool-select
-      :items="allScales"
-      v-model="sName"
-      item-value="name"
-      item-text="name"
-      :placeholder="sName?'':'Select one...'"
+    <multiselect
       class="colorscale-select"
-      @select="pickColorscale"
+      placeholder="Select one..."
+      track-by="name"
+      label="name"
+      :options="allScales"
+      :searchable="false"
+      :allow-empty="false"
+      deselect-label=""
+      select-label=""
+      selected-label=""
+      :close-on-select="true"
+      :show-labels="true"
+      :value="allScales.find(x => x.name === sName)"
+      @input="sName = $event.name; pickColorscale()"
       v-if="!custom"
     >
-      <template slot="item" slot-scope="{ item: scale }">
+      <template slot="option" slot-scope="props">
         <div class="colorscale-container in-select">
-          <div class="color-div" v-for="(c, i) in scale.colors" :key="c + i" :style="'background-color: ' + c"/>
+          <div class="color-div" v-for="(c, i) in props.option.colors" :key="c + i" :style="'background-color: ' + c"/>
         </div>
       </template>
-      <template slot="selection" slot-scope="{ item: scale }">
+      <template slot="singleLabel" slot-scope="props">
         <div class="colorscale-container">
-          <div class="color-div" v-for="(c, i) in scale.colors" :key="i" :style="'background-color: ' + c"/>
+          <div class="color-div" v-for="(c, i) in props.option.colors" :key="i" :style="'background-color: ' + c"/>
         </div>
       </template>
-    </cool-select>
+    </multiselect>
+
     <switcher
       style="margin: 0 0 .25em 0" alignment="none" before="" after="Custom Colors"
       @switch="toggleCustom" :initialValue="custom"
@@ -49,7 +52,7 @@
 </template>
 
 <script>
-import { CoolSelect } from 'vue-cool-select'
+import Multiselect from 'vue-multiselect'
 import Switcher from './Switcher.vue'
 import ColorPicker from './ColorPicker.vue'
 import {scales} from '../colors.json';
@@ -57,7 +60,7 @@ import {scales} from '../colors.json';
 export default {
   name: "ColorScale",
   components: {
-    CoolSelect,
+    Multiselect,
     Switcher,
     ColorPicker,
   },
@@ -146,9 +149,6 @@ export default {
     width: 100%;
     margin: 0.25em;
   }
-  .colorscale-select>div>div.IZ-select__input.IZ-select__input--selection-slot {
-    padding: 0 !important;
-  }
   .colorscale-select input[role="combobox"] {
     display: none !important;
     background-color: #f00
@@ -178,5 +178,16 @@ export default {
   .delete-color-div:hover {
     background-color:rgba(0,0,0,0.2);
     font-weight: 600;
+  }
+</style>
+
+<style>
+  .colorscale-select .multiselect__option::after {
+    display: none;
+  }
+  .colorscale-select .multiselect__option {
+    height: 1em !important;
+    min-height: 1em !important;
+    line-height: 1em !important;
   }
 </style>

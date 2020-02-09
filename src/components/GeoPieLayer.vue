@@ -37,8 +37,8 @@
         const t = v.slice([1], [values.length]).div(v.sum()).dataSync()
         if (t.indexOf(1.) > -1) {
           let i = t.indexOf(1)
-          svgString += '<circle cx="120" cy="120", r="100" fill="'+s.fillColors[i]+'" stroke="'+s.color
-          svgString += '" stroke-width="'+s.weight+'fill-opacity="'+s.fillOpacity+'" opacity="'+s.opacity+'"/>'
+          svgString += '<g><path d="M120,120V20A100,100 0 0,1 120,220A100,100 0 0,1 120,20z" fill="'+s.fillColors[i]+'" stroke="'+s.color
+          svgString += '" stroke-width="'+s.weight+'" fill-opacity="'+s.fillOpacity+'" opacity="'+s.opacity+'"/></g>'
         } else {
           for (let i = 0; i < values.length; i++) {
             let flags = " 0,1 "

@@ -59,7 +59,7 @@ export default {
     min-height: 22px !important;
   }
   .multiselect__option, .multiselect__option::after {
-    padding: 0 12px !important;
+    padding: 0 24px 0 12px !important;
     line-height: 22px !important;
   }
   .multiselect__tags {

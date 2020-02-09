@@ -100,7 +100,21 @@
         <vue-slider :min="0" :max="20" :interval="0.2" v-model="weight" :lazy="true" />
         <template v-if="!fixedWeight">
           <span class="form-label">Width Based On</span>
-          <cool-select :items="fields" v-model="weightBase" item-value="name" item-text="name" placeholder="Select one..."/>
+          <multiselect
+            placeholder="Select one..."
+            track-by="name"
+            label="name"
+            :options="fields"
+            :searchable="false"
+            :allow-empty="false"
+            deselect-label="✓"
+            select-label=""
+            selected-label="✓"
+            :close-on-select="true"
+            :show-labels="true"
+            :value="fields.find(x => x.name === weightBase)"
+            @input="weightBase = $event.name"
+          />
         </template>
 
         <template v-if="!fixedWeight || weight > 0">
@@ -117,7 +131,21 @@
               :initial-colors="colorscale"
             />
             <span class="form-label">Color Based On</span>
-            <cool-select :items="fields" v-model="colorBase" item-value="name" item-text="name" placeholder="Select one..."/>
+            <multiselect
+              placeholder="Select one..."
+              track-by="name"
+              label="name"
+              :options="fields"
+              :searchable="false"
+              :allow-empty="false"
+              deselect-label="✓"
+              select-label=""
+              selected-label="✓"
+              :close-on-select="true"
+              :show-labels="true"
+              :value="fields.find(x => x.name === colorBase)"
+              @input="colorBase = $event.name"
+            />
           </template>
 
           <span class="form-label">Opacity</span>
@@ -131,7 +159,6 @@
 
 <script>
 import VueSlider from 'vue-slider-component'
-import { CoolSelect } from 'vue-cool-select'
 import Multiselect from 'vue-multiselect'
 import ColorPicker from './ColorPicker.vue'
 import Switcher from './Switcher.vue'
@@ -148,7 +175,6 @@ export default {
   name: "GeoPieOptions",
   components: {
     VueSlider,
-    CoolSelect,
     ColorPicker,
     Switcher,
     ColorScale,

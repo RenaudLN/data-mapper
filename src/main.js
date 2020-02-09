@@ -41,7 +41,7 @@ const store = new Vuex.Store({
 
         fixedFillColor: true,
         customFillColor: false,
-        fillColor: "#00f",
+        fillColor: "#0000ff",
         fillColorscaleName: "Viridis",
         fillColorscale: [],
         fillReverseScale: false,
@@ -56,7 +56,7 @@ const store = new Vuex.Store({
       
         fixedColor: true,
         customColor: false,
-        color: "#000",
+        color: "#000000",
         colorscaleName: "Greys",
         colorscale: [],
         reverseScale: false,
@@ -70,7 +70,17 @@ const store = new Vuex.Store({
         showLabels: true,
         labelOffsets: [],
       }
-    ]
+    ],
+    mapOptions: {
+      tiles: {
+        url: "https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png",
+        options: {
+          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+          subdomains: 'abcd',
+          maxZoom: 19,
+        }
+      }
+    }
   },
   mutations: {
     addLayer (state) {
@@ -85,13 +95,16 @@ const store = new Vuex.Store({
     },
     setLayerField (state, payload) {
       let {indexLayer, field, value} = payload
-      window.console.log("set layer", indexLayer, "field", field, value)
+      // window.console.log("set layer", indexLayer, "field", field, value)
       state.layers[indexLayer][field] = value
     },
     addDataset (state, payload) {
       // window.console.log("add dataset", payload)
       state.datasets = Object.assign({}, state.datasets, {[payload.name]: payload.data})
     },
+    setMapOption (state, payload) {
+      state.mapOptions[payload.option] = payload.value
+    }
   }
 })
 

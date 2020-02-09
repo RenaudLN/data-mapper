@@ -5,9 +5,37 @@
       <div class="section-title" v-collapse-toggle>Data Fields</div>
       <div v-collapse-content>
         <span class="form-label">Latitude*</span>
-        <cool-select :items="fields" v-model="latField" item-value="name" item-text="name" placeholder="Select one..." />
+          <multiselect
+            placeholder="Select one..."
+            track-by="name"
+            label="name"
+            :options="fields"
+            :searchable="false"
+            :allow-empty="false"
+            deselect-label="✓"
+            select-label=""
+            selected-label="✓"
+            :close-on-select="true"
+            :show-labels="true"
+            :value="fields.find(x => x.name === latField)"
+            @input="latField = $event.name"
+          />
         <span class="form-label">Longitude*</span>
-        <cool-select :items="fields" v-model="lngField" item-value="name" item-text="name" placeholder="Select one..."/>
+          <multiselect
+            placeholder="Select one..."
+            track-by="name"
+            label="name"
+            :options="fields"
+            :searchable="false"
+            :allow-empty="false"
+            deselect-label="✓"
+            select-label=""
+            selected-label="✓"
+            :close-on-select="true"
+            :show-labels="true"
+            :value="fields.find(x => x.name === lngField)"
+            @input="lngField = $event.name"
+          />
       </div>
     </div>
 
@@ -19,7 +47,21 @@
         <vue-slider :min="0" :max="100" v-model="radius" :lazy="true" />
         <template v-if="!fixedRadius">
           <span class="form-label">Size Based On</span>
-          <cool-select :items="fields" v-model="radiusBase" item-value="name" item-text="name" placeholder="Select one..."/>
+            <multiselect
+              placeholder="Select one..."
+              track-by="name"
+              label="name"
+              :options="fields"
+              :searchable="false"
+              :allow-empty="false"
+              deselect-label="✓"
+              select-label=""
+              selected-label="✓"
+              :close-on-select="true"
+              :show-labels="true"
+              :value="fields.find(x => x.name === radiusBase)"
+              @input="radiusBase = $event.name"
+            />
         </template>
         <span class="form-label">Color</span>
         <switcher @switch="fixedFillColor = !$event" :initialValue="!fixedFillColor" />
@@ -34,7 +76,21 @@
             :initial-colors="fillColorscale"
           />
           <span class="form-label">Color Based On</span>
-          <cool-select :items="fields" v-model="fillColorBase" item-value="name" item-text="name" placeholder="Select one..."/>
+            <multiselect
+              placeholder="Select one..."
+              track-by="name"
+              label="name"
+              :options="fields"
+              :searchable="false"
+              :allow-empty="false"
+              deselect-label="✓"
+              select-label=""
+              selected-label="✓"
+              :close-on-select="true"
+              :show-labels="true"
+              :value="fields.find(x => x.name === fillColorBase)"
+              @input="fillColorBase = $event.name"
+            />
         </template>
         <span class="form-label">Opacity</span>
         <vue-slider :min="0" :max="1" :interval="0.1" v-model="fillOpacity" :lazy="true" />
@@ -49,7 +105,21 @@
         <vue-slider :min="0" :max="20" :interval="0.2" v-model="weight" :lazy="true" />
         <template v-if="!fixedWeight">
           <span class="form-label">Width Based On</span>
-          <cool-select :items="fields" v-model="weightBase" item-value="name" item-text="name" placeholder="Select one..."/>
+            <multiselect
+              placeholder="Select one..."
+              track-by="name"
+              label="name"
+              :options="fields"
+              :searchable="false"
+              :allow-empty="false"
+              deselect-label="✓"
+              select-label=""
+              selected-label="✓"
+              :close-on-select="true"
+              :show-labels="true"
+              :value="fields.find(x => x.name === weightBase)"
+              @input="weightBase = $event.name"
+            />
         </template>
 
         <template v-if="!fixedWeight || weight > 0">
@@ -66,7 +136,21 @@
               :initial-colors="colorscale"
             />
             <span class="form-label">Color Based On</span>
-            <cool-select :items="fields" v-model="colorBase" item-value="name" item-text="name" placeholder="Select one..."/>
+            <multiselect
+              placeholder="Select one..."
+              track-by="name"
+              label="name"
+              :options="fields"
+              :searchable="false"
+              :allow-empty="false"
+              deselect-label="✓"
+              select-label=""
+              selected-label="✓"
+              :close-on-select="true"
+              :show-labels="true"
+              :value="fields.find(x => x.name === colorBase)"
+              @input="colorBase = $event.name"
+            />
           </template>
 
           <span class="form-label">Opacity</span>
@@ -80,7 +164,7 @@
 
 <script>
 import VueSlider from 'vue-slider-component'
-import { CoolSelect } from 'vue-cool-select'
+import Multiselect from 'vue-multiselect'
 import ColorPicker from './ColorPicker.vue'
 import Switcher from './Switcher.vue'
 import ColorScale from './ColorScale.vue'
@@ -95,10 +179,10 @@ export default {
   name: "ScatterOptions",
   components: {
     VueSlider,
-    CoolSelect,
     ColorPicker,
     Switcher,
     ColorScale,
+    Multiselect,
   },
   props: ["indexLayer"],
   computed: {    

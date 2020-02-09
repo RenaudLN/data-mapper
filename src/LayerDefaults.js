@@ -20,7 +20,7 @@ const scatterLayerDefaults = {
 
   fixedFillColor: true,
   customFillColor: false,
-  fillColor: "#00f",
+  fillColor: "#0000ff",
   fillColorscaleName: "Viridis",
   fillColorscale: [],
   fillReverseScale: false,
@@ -34,7 +34,7 @@ const scatterLayerDefaults = {
 
   fixedColor: true,
   customColor: false,
-  color: "#000",
+  color: "#000000",
   colorscaleName: "Greys",
   colorscale: [],
   reverseScale: false,

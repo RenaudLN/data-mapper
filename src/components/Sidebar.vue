@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="tab-content">
-        <div :is="activeTab" />
+        <div :is="activeTab + '-pane'" />
         <!-- <layer-options :index-layer="i-1" v-for="i in nLayers" :key="i"/>
         <button id="add-layer" class="btn" @click="addLayer"><span>+</span><span> Add layer</span></button> -->
       </div>
@@ -25,12 +25,14 @@
 </template>
 
 <script>
-import Layers from "./Layers.vue"
+import LayersPane from "./LayersPane.vue"
+import MapPane from "./MapPane.vue"
 
 export default {
   name: "Sidebar",
   components: {
-    Layers,
+    LayersPane,
+    MapPane,
   },
   data () {
     return {
