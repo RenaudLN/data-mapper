@@ -45,9 +45,11 @@
             if (t[i] > 0.5) {
               flags = " 1,1 "
             }
-            svgString += '<g><path d="M120,120 L'+x[i]+','+y[i]+' A100,100 0'+flags+x[i+1]+','+y[i+1]+' z" '
-            svgString += 'fill="'+s.fillColors[i]+'" stroke="'+s.color+'" stroke-width="'+s.weight+'" stroke-linejoin="bevel" '
-            svgString += 'fill-opacity="'+s.fillOpacity+'" opacity="'+s.opacity+'"></path></g>'
+            if (x[i] && y[i]){
+              svgString += '<g><path d="M120,120 L'+x[i]+','+y[i]+' A100,100 0'+flags+x[i+1]+','+y[i+1]+' z" '
+              svgString += 'fill="'+s.fillColors[i]+'" stroke="'+s.color+'" stroke-width="'+s.weight+'" stroke-linejoin="bevel" '
+              svgString += 'fill-opacity="'+s.fillOpacity+'" opacity="'+s.opacity+'"></path></g>'
+            }
           }
         }
         svgString += '</svg>'
@@ -64,7 +66,8 @@
         const c = this.layer.fillColorscale
         for (let i = 0; i < values.length; i++) {
           tooltip += '<li><div style="background-color: '+c[i]+'" class="color-sample"></div>'+keys[i]+': '
-          tooltip += values[i].toPrecision(3)+' '+p.unit+'</li>'
+          tooltip += values[i]?values[i].toPrecision(3)+' '+p.unit:''
+          tooltip += '</li>'
         }
         tooltip += '</ul></div>'
         return tooltip
@@ -77,7 +80,8 @@
         label += offset ? ' translate(' + offset.x + 'px, ' + offset.y + 'px);"' : ';"'
         label += ';" class="pie-label">'
         label += p.text?p.text+' <br>':''
-        label += Number(totalValue).toPrecision(3) + ' ' + p.unit + '</div>'
+        label += totalValue?Number(totalValue).toPrecision(3) + ' ' + p.unit:''
+        label += '</div>'
         // window.console.log("HERE", offset, label)
         return label
       }
