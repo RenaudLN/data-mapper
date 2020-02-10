@@ -38,7 +38,7 @@
         if (t.indexOf(1.) > -1) {
           let i = t.indexOf(1)
           svgString += '<g><path d="M120,120V20A100,100 0 0,1 120,220A100,100 0 0,1 120,20z" fill="'+s.fillColors[i]+'" stroke="'+s.color
-          svgString += '" stroke-width="'+s.weight+'" fill-opacity="'+s.fillOpacity+'" opacity="'+s.opacity+'"/></g>'
+          svgString += '" stroke-width="'+s.weight+'" fill-opacity="'+s.fillOpacity+'" stroke-opacity="'+s.opacity+'"/></g>'
         } else {
           for (let i = 0; i < values.length; i++) {
             let flags = " 0,1 "
@@ -48,7 +48,7 @@
             if (x[i] && y[i]){
               svgString += '<g><path d="M120,120 L'+x[i]+','+y[i]+' A100,100 0'+flags+x[i+1]+','+y[i+1]+' z" '
               svgString += 'fill="'+s.fillColors[i]+'" stroke="'+s.color+'" stroke-width="'+s.weight+'" stroke-linejoin="bevel" '
-              svgString += 'fill-opacity="'+s.fillOpacity+'" opacity="'+s.opacity+'"></path></g>'
+              svgString += 'fill-opacity="'+s.fillOpacity+'" stroke-opacity="'+s.opacity+'"></path></g>'
             }
           }
         }
