@@ -119,6 +119,7 @@ export default {
     margin-bottom: 0;
     font-weight: 500 !important;
     flex: 1 1 auto;
+    min-width: 0;
   }
   .card-title > input:hover {
     background-color: #f0f0f0;

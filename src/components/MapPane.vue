@@ -1,22 +1,24 @@
 <template>
   <div class="card">
     <div class="card-content">
-      <span class="form-label">Style</span>
-      <multiselect
-        placeholder="Select one..."
-        track-by="name"
-        label="name"
-        :options="styles"
-        :searchable="false"
-        :allow-empty="false"
-        deselect-label="✓"
-        select-label=""
-        selected-label="✓"
-        :close-on-select="true"
-        :show-labels="true"
-        :value="styles.find(x => x.tiles.url === tiles.url)"
-        @input="tiles = $event.tiles"
-      />
+      <div class="card-section">
+        <span class="form-label">Style</span>
+        <multiselect
+          placeholder="Select one..."
+          track-by="name"
+          label="name"
+          :options="styles"
+          :searchable="false"
+          :allow-empty="false"
+          deselect-label="✓"
+          select-label=""
+          selected-label="✓"
+          :close-on-select="true"
+          :show-labels="true"
+          :value="styles.find(x => x.tiles.url === tiles.url)"
+          @input="tiles = $event.tiles"
+        />
+      </div>
     </div>
   </div>
 </template>
