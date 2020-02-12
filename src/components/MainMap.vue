@@ -6,7 +6,7 @@
   >
     <l-tile-layer :url="tiles.url" :options="tiles.options"/>
     <div :is="l.type + '-layer'" :layer="l" :indexLayer="i" v-for="(l, i) in visibleLayers" :key="i" />
-    <l-control :position="'bottomright'">
+    <l-control :position="'bottomright'" v-if="showLegend && visibleLayers.length > 0">
       <map-legend :layers="visibleLayers"/>
     </l-control>
     <print-control />
@@ -28,7 +28,7 @@
   import 'leaflet/dist/leaflet.css'
 
   const computedFields = [
-    "tiles",
+    "tiles", "showLegend"
   ]
 
   export default {

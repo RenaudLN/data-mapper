@@ -1,6 +1,7 @@
 <template>
   <div class="card">
     <div class="card-content">
+      <div class="card-title">Map options</div> 
       <div class="card-section">
         <span class="form-label">Style</span>
         <multiselect
@@ -18,6 +19,7 @@
           :value="styles.find(x => x.tiles.url === tiles.url)"
           @input="tiles = $event.tiles"
         />
+        <switcher :val="showLegend" v-model="showLegend" before="" after="Show Legend" alignment="none"/>
       </div>
     </div>
   </div>
@@ -25,15 +27,17 @@
 
 <script>
 import Multiselect from 'vue-multiselect'
+import Switcher from './Switcher.vue'
 
 const computedFields = [
-  "tiles",
+  "tiles", "showLegend",
 ]
 
 export default {
   name: "MapPane",
   components: {
     Multiselect,
+    Switcher,
   },
   data() {
     return {

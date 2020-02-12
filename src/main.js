@@ -38,6 +38,8 @@ const store = new Vuex.Store({
         fillColor: "#0000ff",
         fillColorscaleName: "Enea",
         fillColorscale: [],
+        fillColorscaleN: 0,
+        revFillColorscale: false,
         fillReverseScale: false,
         fillColorBase: null,
 
@@ -53,6 +55,8 @@ const store = new Vuex.Store({
         color: "#ffffff",
         colorscaleName: "Greys",
         colorscale: [],
+        colorscaleN: 0,
+        revColorscale: false,
         reverseScale: false,
         colorBase: null,
 
@@ -73,7 +77,9 @@ const store = new Vuex.Store({
           subdomains: 'abcd',
           maxZoom: 19,
         }
-      }
+      },
+      showLegend: true,
+      
     }
   },
   mutations: {

@@ -47,25 +47,31 @@ export default {
 <style>
   .switch {
     margin-top: 7px;
+    display: inline-block;
   }
   .section-title+span.form-label+.switch {
     margin-top: -2px;
   }
   span.lever {
     height: 10px !important;
-    width: 24px !important;
+    width: 28px !important;
     margin: 0 5px !important;
   }
   span.lever::after, span.lever::before {
     height: 14px !important;
     width: 14px !important;
     top: -2px !important;
+    border-radius: 2px !important;
+    background-color: #ccc !important;
+  }
+  .switch label input+.lever {
+    background-color: #888 !important;
   }
   .switch label input[type=checkbox]:checked+.lever {
-    background-color: rgba(var(--theme-color-triplet), 0.3);
+    background-color: rgba(var(--theme-color-triplet), 0.7) !important;
   }
   .switch label input[type=checkbox]:checked+.lever:before, .switch label input[type=checkbox]:checked+.lever:after {
-    background-color: var(--theme-color);
-    left: 10px !important;
+    background-color: var(--theme-color) !important;
+    left: 16px !important;
   }
 </style>

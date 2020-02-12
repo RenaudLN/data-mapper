@@ -74,6 +74,8 @@
             :scale-name="fillColorscaleName"
             :initial-custom="customFillColor"
             :initial-colors="fillColorscale"
+            :initial-reverse="revFillColorscale"
+            :initial-n="colorscaleN"
           />
           <span class="form-label">Color Based On</span>
             <multiselect
@@ -134,6 +136,8 @@
               :scale-name="colorscaleName"
               :initial-custom="customColor"
               :initial-colors="colorscale"
+              :initial-reverse="revColorscale"
+              :initial-n="fillColorscaleN"
             />
             <span class="form-label">Color Based On</span>
             <multiselect
@@ -172,7 +176,8 @@ import ColorScale from './ColorScale.vue'
 const computedFields = [
   "latField", "lngField", "fixedRadius", "radius", "radiusBase", "fixedWeight", "weight", "weightBase",
   "opacity", "fillOpacity", "fixedFillColor", "fillColor", "fillColorscale", "fillColorscaleName", "fillColorBase",
-  "fixedColor", "color", "colorscale", "colorscaleName", "colorBase", "customFillColor", "customColor"
+  "fixedColor", "color", "colorscale", "colorscaleName", "colorBase", "customFillColor", "customColor",
+  "revFillColorscale", "revColorscale", "fillColorscaleN", "colorscaleN",
 ]
 
 export default {
@@ -206,11 +211,15 @@ export default {
       this.fillColorscaleName = event.name
       this.customFillColor = event.custom
       this.fillColorscale = event.colors
+      this.revFillColorscale = event.reverse
+      this.fillColorscaleN = event.n
     },
     handlePickColorscale: function(event) {
       this.colorscaleName = event.name
       this.customColor = event.custom
       this.colorscale = event.colors
+      this.revColorscale = event.reverse
+      this.colorscaleN = event.n
     },
     handleRadiusBase: function (event) {
       this.fixedRadius = !event

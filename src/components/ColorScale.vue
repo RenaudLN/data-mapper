@@ -11,12 +11,33 @@
       deselect-label=""
       select-label=""
       selected-label=""
+      :preselectFirst="true"
       :close-on-select="true"
       :show-labels="true"
       :value="allScales.find(x => x.name === sName)"
       @input="sName = $event.name; pickColorscale()"
       :disabled="custom"
     >
+      <template slot="beforeList">
+        <div class="colorscale-select-header">
+          <div class="header-item">
+            <div>Scale Types</div>
+            <p v-for="(s, i) in scaleTypes" :key="i">
+              <label @click.prevent.stop="type = s">
+                <input class="with-gap" :name="'type'+id" type="radio" :checked="s===type?'checked':''"/>
+                <span>{{s}}</span>
+              </label>
+            </p>
+          </div>
+          <div class="header-item">
+            <div># of Colors</div>
+            <br class="xs"/>
+            <vue-slider :min="0" :max="20" v-model="nColors" :lazy="true" :contained="false"/>
+            <br class="xs"/>
+            <button class="btn btn-thin" @click="nColors=0" :disabled="nColors==0">Default</button>
+          </div>
+        </div>
+      </template>
       <template slot="option" slot-scope="props">
         <div class="colorscale-container in-select" :style="custom?'display: none;':''">
           <div class="color-div" v-for="(c, i) in props.option.colors" :key="c + i" :style="'background-color: ' + c"/>
@@ -43,7 +64,7 @@
                   :value="c.color" @pick-color="changeColor($event, i)"
                   style="flex: 1 1 auto"
                 />
-                <div class="delete-color-div tooltip tooltip-top" @click="removeColor(i)" data-tooltip="Remove color">
+                <div class="delete-color-div tooltip tooltip-bottom" @click="removeColor(i)" data-tooltip="Remove color">
                 ×
                 </div>
               </div>
@@ -51,7 +72,7 @@
           </draggable>
           <div class="add-color-div tooltip tooltip-top" @click="addColor" data-tooltip="Add color">
             <svg width="20" height="20">
-              <path d="M10,5V15V10H5H15H10Z" stroke-width="1.5" stroke="#000"/>
+              <path d="M10,5V15V10H5H15H10Z" stroke-width="1.5" stroke="var(--font-1)"/>
             </svg>
           </div>
         </div>
@@ -59,13 +80,12 @@
     </multiselect>
     <switcher
       :val="custom" v-model="custom"
-      alignment="none" before="" after="Custom Palette" style="margin: 0 0 .25em 0"
+      alignment="unset" before="" after="Custom Palette" style="margin: 0 0 .25em 0"
     />
-    <!-- <switcher
-      style="margin: 0 0 .25em 0" alignment="none" before="" after="Custom Palette"
-      v-model="custom"
-    /> -->
-      <!-- @switch="toggleCustom" :initialValue="custom" -->
+    <switcher
+      :val="reverse" v-model="reverse"
+      alignment="right" before="Reverse Scale" after="" style="margin: 0 0 .25em 0"
+    />
   </div>
 </template>
 
@@ -75,6 +95,8 @@ import Switcher from './Switcher.vue'
 import ColorPicker from './ColorPicker.vue'
 import {scales} from '../colors.json';
 import draggable from 'vuedraggable'
+import VueSlider from 'vue-slider-component'
+import chroma from "chroma-js"
 
 export default {
   name: "ColorScale",
@@ -83,18 +105,24 @@ export default {
     Switcher,
     ColorPicker,
     draggable,
+    VueSlider,
   },
   props: {
     scaleName: {type: String, default: "Viridis"},
     initialColors: {type: Array},
     initialCustom: {type: Boolean, default: false},
+    initialReverse: {type: Boolean, default: false},
+    initialN: {type: Number, default: 0}
   },
   data () {
     return {
-      // nColors: 9,
+      nColors: this.initialN,
+      scaleTypes: ["All", "Sequential", "Divergent", "Qualitative"],
+      type: "All",
       isContinuous: false,
       sName: this.scaleName,
       custom: this.initialCustom,
+      reverse: this.initialReverse,
       customColors: this.initialColors.map((c, i) => {return {color: c, id: i}}),
       id: String(Math.round(Math.random() * 1000000)),
       dragOptions: {
@@ -107,15 +135,25 @@ export default {
   },
   computed: {
     allScales: function() {
-      return Object.keys(scales).map((x) => {
-        return {
-          name: x,
-          colors: scales[x]
+      let scaleNames = Object.keys(scales)
+      if (this.type !== "All") {
+        scaleNames = scaleNames.filter(x => scales[x].type == this.type)
+      }
+      return scaleNames.map((x) => {
+        let c = [...scales[x].colors]
+        if (this.nColors > 0){
+          if (scales[x].type == "Qualitative"){
+            c = c.slice(0, this.nColors)
+          } else {
+            c = chroma.scale(c).colors(this.nColors)
+          }
         }
+        c = this.reverse ? c.reverse() : c
+        return {name: x, colors: c}
       })
     },
     colors: function() {
-      return scales[this.sName]
+      return this.allScales.find(x => x.name == this.sName).colors
     },
     nextId: function() {
       return Math.max(0, ...this.customColors.map(x => x.id)) + 1
@@ -124,12 +162,29 @@ export default {
       return this.customColors.map(x => x.color)
     }
   },
-  created: function() {
-    this.pickColorscale()
-  },
   watch: {
     customColors: function() {
-      this.$emit('pick-colorscale', {colors: this.customColors2, name: this.sName, custom: this.custom})
+      this.$emit(
+        'pick-colorscale',
+        {colors: this.customColors2, name: this.sName, custom: this.custom, reverse: this.reverse, n: this.nColors}
+      )
+    },
+    reverse: function() {
+      if (this.custom) {
+        this.customColors = this.customColors.reverse()
+      }
+      this.pickColorscale()
+    },
+    nColors: function() {
+      this.pickColorscale()
+    },
+    custom: function() {
+      if (this.custom) {
+        this.customColors = this.colors.map((c, i) => {return {color: c, id: i + this.nextId}})
+      }
+      else {
+        this.pickColorscale()
+      }
     },
   },
   methods: {
@@ -144,16 +199,6 @@ export default {
       l = [...l.slice(0, n), o, ...l.slice(n)]
       this.customColors = l.map(i => this.customColors[i])
     },
-    toggleCustom: function(event) {
-      window.console.log(event)
-      this.custom = event
-      if (event) {
-        this.customColors = this.colors.map((c, i) => {return {color: c, id: i + this.nextId}})
-      }
-      // else {
-      //   this.pickColorscale()
-      // }
-    },
     changeColor: function(event, i) {
       let c = [...this.customColors]
       c[i].color = event.hex
@@ -167,12 +212,22 @@ export default {
     },
     pickColorscale: function() {
       if (this.custom) {
-        this.$emit('pick-colorscale', {colors: this.customColors2, name: this.sName, custom: this.custom})
+        this.$emit(
+          'pick-colorscale',
+          {colors: this.customColors2, name: this.sName, custom: this.custom, reverse: this.reverse, n: this.nColors}
+        )
       } else {
-        this.$emit('pick-colorscale', {colors: this.colors, name: this.sName, custom: this.custom})
+        // let c = [...this.colors]
+        this.$emit(
+          'pick-colorscale',
+          {colors: this.colors, name: this.sName, custom: this.custom, reverse: this.reverse, n: this.nColors}
+        )
       }
-    }
-  }
+    },
+  },
+  created() {
+    this.pickColorscale()
+  },
 }
 </script>
 
@@ -200,6 +255,9 @@ export default {
   }
   .add-color-div:hover {
     background-color:rgba(0,0,0,0.2);
+  }
+  .add-color-div>svg>path {
+    stroke: #fff;
   }
   .delete-color-div {
     flex: 1 1 auto;
@@ -270,11 +328,6 @@ export default {
   .colorscale-select .multiselect__tags {
     padding: 0.5em 28px 0 0 !important;
   }
-  /* .colorscale-select .multiselect__option {
-    height: 1em !important;
-    min-height: 1em !important;
-    line-height: 1em !important;
-  }   */
   .flip-list-move {
     transition: transform 0.5s;
   }
@@ -284,5 +337,16 @@ export default {
   .ghost {
     opacity: 0.5;
     background: #c8ebfb;
+  }
+  .colorscale-select-header {
+    padding: 0.5em;
+    display: flex;
+  }
+  .header-item {
+    flex: 1 1 auto;
+    padding-right: 0.5em;
+  }
+  .header-item:not(:first-child) {
+    margin-left: 1em;
   }
 </style>

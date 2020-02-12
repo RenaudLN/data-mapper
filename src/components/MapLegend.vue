@@ -16,7 +16,6 @@
 
 <style>
   .legend {
-    min-width: 250px;
     z-index: 999;
     background-color: rgb(255, 255, 255, 0.75);
     padding: 1em 2em;

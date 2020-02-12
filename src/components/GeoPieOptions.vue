@@ -52,7 +52,7 @@
           @input="pieFields = $event.map(x => x.name)"
         />
         <span class="form-label">Pie Title</span>
-        <switcher :val="showLabels" v-model="showLabels" before="Add Labels on Map" alignment="none"/>
+        <switcher :val="showLabels" v-model="showLabels" before="Add Labels on Map" />
         <multiselect
           placeholder="Select one..."
           track-by="name"
@@ -85,6 +85,8 @@
           :scale-name="fillColorscaleName"
           :initial-custom="customFillColor"
           :initial-colors="fillColorscale"
+          :initial-reverse="revFillColorscale"
+          :initial-n="fillColorscaleN"
         />
         <span class="form-label">Opacity</span>
         <vue-slider :min="0" :max="1" :interval="0.1" v-model="fillOpacity" />
@@ -128,6 +130,7 @@
               :scale-name="colorscaleName"
               :initial-custom="customColor"
               :initial-colors="colorscale"
+              :initial-n="colorscaleN"
             />
             <span class="form-label">Color Based On</span>
             <multiselect
@@ -168,6 +171,7 @@ const computedFields = [
   "opacity", "fillOpacity", "fillColorscale", "fillColorscaleName",
   "fixedColor", "color", "colorscale", "colorscaleName", "colorBase",
   "pieFields", "pieTitle", "pieUnit", "showLabels", "customFillColor", "customColor",
+  "revFillColorscale", "revColorscale", "fillColorscaleN", "colorscaleN",
 ]
 
 export default {
@@ -206,11 +210,14 @@ export default {
       this.fillColorscaleName = event.name
       this.customFillColor = event.custom
       this.fillColorscale = event.colors
+      this.revFillColorscale = event.reverse
+      this.fillColorscaleN = event.n
     },
     handlePickColorscale: function(event) {
       this.colorscaleName = event.name
       this.customColor = event.custom
-      this.colorscale = event.colors
+      this.revColorscale = event.reverse
+      this.colorscaleN = event.n
     },
     handleRadiusBase: function (event) {
       this.fixedRadius = !event

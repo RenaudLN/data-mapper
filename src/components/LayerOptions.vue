@@ -3,10 +3,11 @@
     <div class="card-content">
       <div class="card-title" v-collapse-toggle>
         <span class="handle">⋮⋮</span>
-        <input v-model="name" @click.stop/>
         <img v-if="visible" src="../assets/visible.svg" @click.stop="visible = !visible"/>
         <img v-else src="../assets/invisible.svg" @click.stop="visible = !visible"/>
+        <input v-model="name" @click.stop/>
         <img src="../assets/delete.svg" @click.stop="removeLayer"/>
+        <img src="../assets/caret.svg" class="caret"/>
       </div>
       <div v-collapse-content>
         <div />
@@ -100,6 +101,7 @@ export default {
 <style>
   .card {
     margin: 0.5rem 0 !important;
+    box-shadow: none !important;
   }
   span.form-label {
     font-size: 0.75rem;
@@ -107,7 +109,7 @@ export default {
     text-transform: capitalize;
     margin-top: 12px;
     display: inline-block;
-    color: #444;
+    color: var(--font-2);
     font-weight: 600;
   }
   p.range-field, p.range-field>input {
@@ -122,27 +124,32 @@ export default {
     padding: 0.25em !important;
     margin: 0 !important;
     position: relative;
+    background-color: var(--menu-3);
+    font-size: 1.25rem !important;
+  }
+  .card-title * {
+    color: var(--font-1);
   }
   .card-title > input {
     font-size: 1rem !important;
     height: 1.2rem !important;
     margin-bottom: 0;
+    margin-left: 0.5em;
     font-weight: 500 !important;
     flex: 1 1 auto;
     min-width: 0;
   }
   .card-title > input:hover {
-    background-color: #f0f0f0;
+    background-color: var(--menu-2);
   }
   span.handle {
-    color: #000;
-    margin-right: 0.15em;
+    /* margin-right: 0.15em; */
     padding: 0 0.1em;
     cursor: move;
     font-size: 0.75em;
   }
   span.handle:hover {
-    background-color: rgba(0,0,0,0.1);
+    background-color: rgba(255,255,255,0.2);
   }
   input.options-input {
     font-size: 1rem !important;
@@ -160,6 +167,12 @@ export default {
     flex: 0 0 auto;
     opacity: 0.5;
     cursor: pointer;
+    filter: invert(1);
+  }
+  .card-title > img.caret {
+    height: 0.75rem;
+    margin-top: auto;
+    margin-bottom: auto;
   }
   .card-title > img:hover {
     opacity: 1;
@@ -170,19 +183,22 @@ export default {
   }
   .card-section {
     padding: 0 0.5em 0.5em 0.5em;
+    background-color: var(--menu-2);
+    border-bottom: 1px solid var(--menu-3);
   }
-  .card-section:nth-child(odd) {
-    background-color: #e0e0e0;
+  /* .card-section:nth-child(odd) {
+    background-color: var(--menu-3);
   }
   .card-section:nth-child(even) {
-    background-color: #fafafa;
-  }
+    background-color: var(--menu-1);
+  } */
   .section-title {
-    color: var(--theme-color);
+    color: var(--font-1);
     font-weight: bold;
     font-variant: small-caps;
     padding-top: 0.25em;
     position: relative;
+    /* border-top: 1px solid var(--menu-3) */
   }
   .section-title.v-collapse-toggler {
     cursor: pointer;
@@ -200,7 +216,7 @@ export default {
   }
   .section-title.v-collapse-toggler:hover {
     /* filter: brightness(0.7); */
-    background-color: rgba(0,0,0,0.25)
+    background-color: rgba(0,0,0,0.3);
   }
   .section-title+span.form-label {
     margin-top: 0px;

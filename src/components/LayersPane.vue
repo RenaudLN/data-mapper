@@ -1,6 +1,6 @@
 <template>
   <div>
-    <button @click="$refs.upload.click()" class="btn"><span>+</span><span> Add dataset</span></button>
+    <button @click="$refs.upload.click()" class="btn btn-thin"><span>+</span><span> Add dataset</span></button>
     <input ref="upload" type="file" @change="handleUpload" style="display: none"/>
     <draggable
       class="layers-list"
@@ -12,7 +12,7 @@
     >
       <layer-options :index-layer="i" v-for="i in indices" :key="i"/>
     </draggable>
-    <button id="add-layer" class="btn" @click="addLayer"><span>+</span><span> Add layer</span></button>
+    <button id="add-layer" class="btn btn-thin" @click="addLayer"><span>+</span><span> Add layer</span></button>
   </div>
 </template>
 
@@ -99,11 +99,6 @@ export default {
 </script>
 
 <style scoped>
-  #add-layer > span:first-child {
-    font-weight: 700;
-    font-size: 18px;
-    padding-right: 0.5em;
-  }
   .custom-file-input::-webkit-file-upload-button {
     visibility: hidden;
   }

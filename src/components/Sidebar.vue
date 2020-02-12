@@ -12,11 +12,9 @@
           {{tab}}
         </div>
       </div>
-      <div class="tab-content">
+      <vue-custom-scrollbar class="tab-content" >
         <div :is="activeTab + '-pane'" :n-layers="nLayers"/>
-        <!-- <layer-options :index-layer="i-1" v-for="i in nLayers" :key="i"/>
-        <button id="add-layer" class="btn" @click="addLayer"><span>+</span><span> Add layer</span></button> -->
-      </div>
+      </vue-custom-scrollbar>
     </div>
     <div id="hide-sidebar" @click="toggleSidebar">
       {{hideButtonText}}
@@ -25,6 +23,7 @@
 </template>
 
 <script>
+import vueCustomScrollbar from 'vue-custom-scrollbar'
 import LayersPane from "./LayersPane.vue"
 import MapPane from "./MapPane.vue"
 
@@ -33,6 +32,7 @@ export default {
   components: {
     LayersPane,
     MapPane,
+    vueCustomScrollbar,
   },
   data () {
     return {
@@ -67,7 +67,7 @@ export default {
     bottom: var(--base-margin);
     left: var(--base-margin);
     width: var(--sidebar-width);
-    background-color: #fafafa;
+    background-color: var(--menu-1);
     z-index: 500;
     text-align: left;
     display: flex;
@@ -108,18 +108,18 @@ export default {
     padding: .25em;
     text-align: center;
     cursor: pointer;
-    background-color: #fafafa;
+    background-color: var(--menu-1);
   }
   .tab.active {
     border-bottom: none;
-    background-color: #fff;
+    background-color: var(--menu-2);
   }
   .tab-content {
-    padding: 0.5em;
+    padding: 0.5em 1em;
     overflow-y: auto;
     overflow-x: hidden;
     flex: 1 1 auto;
-    background-color: #fff;
+    background-color: var(--menu-2);
   }
   #hide-sidebar {
     position: absolute;
@@ -130,7 +130,7 @@ export default {
     line-height: 24px;
     text-align: center;
     font-weight: bold;
-    background-color: #fafafa;
+    background-color: var(--menu-1);
     transform: translateX(100%) translateX(var(--base-margin));
     cursor: pointer;
   }
