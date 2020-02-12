@@ -16,26 +16,26 @@
               stroke="#000" fill="none" stroke-width="1"
             />
             <circle
-              :cx="layer.radius[1] + 1" :cy="2 * layer.radius[1] - layer.radius[0] + 1" :r="layer.radius[0]"
+              :cx="layer.radius[1] + 1" :cy="2 * layer.radius[1] - minRadius + 1" :r="minRadius"
               stroke="#000" fill="none" stroke-width="1"
             />
             <path :d="'M' + layer.radius[1] + ',1h' + 1.5*layer.radius[1]" stroke="#000" fill="none" stroke-width="1"/>
             <path
-              :d="'M' + layer.radius[1] + ','+ 2 * (layer.radius[1] - layer.radius[0] + 0.5) +'h' + 1.5*layer.radius[1]"
+              :d="'M' + layer.radius[1] + ','+ 2 * (layer.radius[1] - minRadius + 0.5) +'h' + 1.5*layer.radius[1]"
               stroke="#000" fill="none" stroke-width="1"
             />
           </g>
         </svg>
       </div>
       <div v-if="!layer.fixedRadius">
-        <div style="transform: translateY(-50%); white-space: nowrap">
+        <div style="transform: translateY(-50%); white-space: nowrap;">
           {{maxValue}} {{layer.pieUnit}}
         </div>
         <div
-          style="transform: translateY(-50%);position: absolute;"
-          :style="'top: ' + 2 * (layer.radius[1] - layer.radius[0] + 0.5) + 'px'"
+          style="transform: translateY(-50%);position: absolute; white-space: nowrap;"
+          :style="'top: ' + 2 * (layer.radius[1] - minRadius + 0.5) + 'px'"
         >
-          0
+          {{minLabel}} {{layer.pieUnit}}
         </div>
       </div>
     </div>
@@ -43,26 +43,49 @@
 </template>
 
 <script>
+  
   export default {
     name: "GeoPieLegend",
     props: ["layer"],
     computed: {
       pieSizeStyle: function() {
         const r = this.layer.radius
-        return r.map(r => "width: " + 2 * r + "px; height: " + 2 * r + "px")
+        return r.map(r => `width: ${2 * r}px; height: ${2 * r}px`)
       },
-      maxValue: function() {
-        const l = this.layer
-        const d = this.$store.state.datasets[l.dataset]
-        const totalValue = d[l.latField].map((x, i) => {
+      filteredData: function() {
+        return this.$store.state.datasets[this.layer.dataset]
+      },
+      totalValue: function() {
+        return this.filteredData[this.layer.latField].map((x, i) => {
           let v = 0
-          for (let f of l.pieFields) {
-            v += d[f][i]
+          for (let f of this.layer.pieFields) {
+            v += this.filteredData[f][i]
           }
           return v
         })
-        return Math.round(Math.max(...totalValue))
       },
+      maxValue: function() {
+        return Math.round(Math.max(...this.totalValue))
+      },
+      minValue: function() {
+        return Math.round(Math.min(...this.totalValue))
+      },
+      minRadius: function() {
+        if (this.layer.radius[0] == 0) {
+          const r = Math.sqrt(this.minValue / this.maxValue) * this.layer.radius[1]
+          if (this.layer.radius[1] - r >= 7) {
+            return r
+          }
+          return this.layer.radius[0]
+        }
+        return this.layer.radius[0]
+      },
+      minLabel: function() {
+        if (this.minRadius !== this.layer.radius[0]) {
+          return this.minValue
+        }
+        return 0
+      }
     },
   }
 </script>

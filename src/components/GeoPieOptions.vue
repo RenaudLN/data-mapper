@@ -1,6 +1,5 @@
 <template>
   <div id="scatter-options">
-
     <div class="card-section" is="v-collapse-wrapper" :active="true">
       <div class="section-title" v-collapse-toggle>Data Fields</div>
       <div v-collapse-content>
@@ -53,7 +52,7 @@
           @input="pieFields = $event.map(x => x.name)"
         />
         <span class="form-label">Pie Title</span>
-        <switcher @switch="showLabels = $event" :initialValue="showLabels" before="Add Labels on Map" />
+        <switcher :val="showLabels" v-model="showLabels" before="Add Labels on Map" alignment="none"/>
         <multiselect
           placeholder="Select one..."
           track-by="name"
@@ -78,8 +77,8 @@
       <div class="section-title" v-collapse-toggle>Fill</div>
       <div v-collapse-content>
         <span class="form-label">Size</span>
-        <switcher @switch="handleRadiusBase" :initialValue="!fixedRadius" before="Based on Total Value" />
-        <vue-slider :min="0" :max="100" v-model="radius" :lazy="true" />
+        <switcher :val="!fixedRadius" :value="!fixedRadius" @input="handleRadiusBase" before="Based on Total Value"/>
+        <vue-slider :min="0" :max="100" v-model="radius" />
         <span class="form-label">Color</span>
         <color-scale
           @pick-colorscale="handlePickFillColorscale"
@@ -88,7 +87,7 @@
           :initial-colors="fillColorscale"
         />
         <span class="form-label">Opacity</span>
-        <vue-slider :min="0" :max="1" :interval="0.1" v-model="fillOpacity" :lazy="true" />
+        <vue-slider :min="0" :max="1" :interval="0.1" v-model="fillOpacity" />
       </div>
     </div>
 
@@ -96,8 +95,8 @@
       <div class="section-title" v-collapse-toggle>Outline</div>
       <div v-collapse-content>
         <span class="form-label">Width</span>
-        <switcher @switch="handleWeightBase" :initialValue="!fixedWeight" />
-        <vue-slider :min="0" :max="20" :interval="0.2" v-model="weight" :lazy="true" />
+        <switcher :val="!fixedWeight" :value="!fixedWeight" @input="handleWeightBase"/>
+        <vue-slider :min="0" :max="20" :interval="0.2" v-model="weight" />
         <template v-if="!fixedWeight">
           <span class="form-label">Width Based On</span>
           <multiselect
@@ -119,7 +118,7 @@
 
         <template v-if="!fixedWeight || weight > 0">
           <span class="form-label">Color</span>
-          <switcher @switch="fixedColor = !$event" :initialValue="!fixedColor" />
+          <switcher :val="!fixedColor" :value="!fixedColor" @input="fixedColor = !$event"/>
           <template v-if="fixedColor">
             <color-picker :name="'colorPicker' + indexLayer" :value="color" @pick-color="color = $event.hex" />
           </template>
@@ -149,7 +148,7 @@
           </template>
 
           <span class="form-label">Opacity</span>
-          <vue-slider :min="0" :max="1" :interval="0.1" v-model="opacity" :lazy="true" />
+          <vue-slider :min="0" :max="1" :interval="0.1" v-model="opacity" />
         </template>
       </div>
     </div>
@@ -181,15 +180,12 @@ export default {
     Multiselect,
   },
   props: ["indexLayer"],
+  data() {
+    return {
+      test: true
+    }
+  },
   computed: {
-    testF: function() {
-      return this.fields.filter(x => this.pieFields.indexOf(x.name) >= 0)
-      // const f = this.fields.filter(x => this.pieFields.indexOf(x.name) >= 0)
-      // if (this.pieFields) {
-      //   return f
-      // }
-      // return []
-    },
     fields: function() {
       const dn = this.$store.state.layers[this.indexLayer].dataset
       const d = this.$store.state.datasets[dn]

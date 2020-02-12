@@ -37,18 +37,19 @@
         const t = v.slice([1], [values.length]).div(v.sum()).dataSync()
         if (t.indexOf(1.) > -1) {
           let i = t.indexOf(1)
-          svgString += '<g><path d="M120,120V20A100,100 0 0,1 120,220A100,100 0 0,1 120,20z" fill="'+s.fillColors[i]+'" stroke="'+s.color
-          svgString += '" stroke-width="'+s.weight+'" fill-opacity="'+s.fillOpacity+'" stroke-opacity="'+s.opacity+'"/></g>'
+          svgString += `<g><path d="M120,120V20A100,100 0 0,1 120,220A100,100 0 0,1 120,20z" `
+          svgString += `fill="${s.fillColors[i]}" stroke="${s.color}" stroke-width="${s.weight}" `
+          svgString += `fill-opacity="${s.fillOpacity}" stroke-opacity="${s.opacity}"/></g>`
         } else {
           for (let i = 0; i < values.length; i++) {
-            let flags = " 0,1 "
+            let flags = "0,1"
             if (t[i] > 0.5) {
-              flags = " 1,1 "
+              flags = "1,1"
             }
             if (x[i] && y[i]){
-              svgString += '<g><path d="M120,120 L'+x[i]+','+y[i]+' A100,100 0'+flags+x[i+1]+','+y[i+1]+' z" '
-              svgString += 'fill="'+s.fillColors[i]+'" stroke="'+s.color+'" stroke-width="'+s.weight+'" stroke-linejoin="bevel" '
-              svgString += 'fill-opacity="'+s.fillOpacity+'" stroke-opacity="'+s.opacity+'"></path></g>'
+              svgString += `<g><path d="M120,120 L${x[i]},${y[i]} A100,100 0 ${flags} ${x[i+1]},${y[i+1]} z" `
+              svgString += `fill="${s.fillColors[i]}" stroke="${s.color}" stroke-width="${s.weight}" stroke-linejoin="bevel" `
+              svgString += `fill-opacity="${s.fillOpacity}" stroke-opacity="${s.opacity}"></path></g>`
             }
           }
         }
@@ -60,13 +61,13 @@
         const values = Object.values(p.values)
         let tooltip = '<div class="marker-tooltip">'
         if (p.text){
-          tooltip += '<div class="marker-tooltip-title">'+p.text+'</div>'
+          tooltip += `<div class="marker-tooltip-title">${p.text}</div>`
         }
         tooltip += '<ul>'
         const c = this.layer.fillColorscale
         for (let i = 0; i < values.length; i++) {
-          tooltip += '<li><div style="background-color: '+c[i]+'" class="color-sample"></div>'+keys[i]+': '
-          tooltip += values[i]?values[i].toPrecision(3)+' '+p.unit:''
+          tooltip += `<li><div style="background-color: ${c[i]};" class="color-sample"></div>${keys[i]}: `
+          tooltip += values[i] ? `${values[i].toPrecision(3)} ${p.unit}` : ''
           tooltip += '</li>'
         }
         tooltip += '</ul></div>'
@@ -77,12 +78,11 @@
         const values = Object.values(p.values)
         const totalValue = tf.tensor(values).sum().dataSync()
         let label = '<div style="background-color: rgba(255,255,255,0.75); width: auto; padding: 0.15em 0.5em;'
-        label += 'transform: translate(calc(-50% + ' + offset.x + 'px), calc(-100% + ' + offset.y + 'px + ' + (-p.style.radius-2) +'px));" '
+        label += `transform: translate(calc(-50% + ${offset.x}px), calc(-100% + ${offset.y}px + ${-p.style.radius-2}px));" `
         label += 'class="pie-label">'
-        label += p.text?p.text+' <br>':''
-        label += totalValue?Number(totalValue).toPrecision(3) + ' ' + p.unit:''
+        label += p.text ? `${p.text}<br>` : ''
+        label += totalValue ? `${Number(totalValue).toPrecision(3)} ${p.unit}` : ''
         label += '</div>'
-        // window.console.log("HERE", offset, label)
         return label
       }
     },
@@ -189,13 +189,7 @@
             return v
           })
           const t = tf.tensor1d(totalValue)
-          const r = tf.add(
-            l.radius[0],
-            tf.mul(
-              l.radius[1] - l.radius[0],
-              tf.sqrt(tf.div(t, t.max()))
-            )
-          ).dataSync()
+          const r = tf.sqrt(t.div(t.max())).mul(l.radius[1] - l.radius[0]).add(l.radius[0]).dataSync()
           return r
         } else {
           return tf.fill([p.length], l.radius[1]).dataSync()

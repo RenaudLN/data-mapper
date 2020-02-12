@@ -2,7 +2,16 @@
   <div>
     <button @click="$refs.upload.click()" class="btn"><span>+</span><span> Add dataset</span></button>
     <input ref="upload" type="file" @change="handleUpload" style="display: none"/>
-    <layer-options :index-layer="i-1" v-for="i in nLayers" :key="i"/>
+    <draggable
+      class="layers-list"
+      tag="ul"
+      v-model="list"
+      v-bind="dragOptions"
+      @change="reorderLayers"
+      handle=".handle"
+    >
+      <layer-options :index-layer="i" v-for="i in indices" :key="i"/>
+    </draggable>
     <button id="add-layer" class="btn" @click="addLayer"><span>+</span><span> Add layer</span></button>
   </div>
 </template>
@@ -10,20 +19,51 @@
 <script>
 import LayerOptions from "./LayerOptions.vue"
 import DataFrame from 'dataframe-js'
+import draggable from 'vuedraggable'
 
 export default {
   name: "LayersPane",
   components: {
     LayerOptions,
+    draggable,
+  },
+  props: ["nLayers"],
+  data() {
+    return {
+      dragOptions: {
+        animation: 0,
+        group: "description",
+        disabled: false,
+        ghostClass: "ghost"
+      },
+      list: new Array(this.nLayers).fill(0).map((x, i) => {return {id: i}})
+    }
   },
   computed: {
-    nLayers: function() {
-      return this.$store.state.layers.length
-    },
+    indices: function() {
+      return new Array(this.nLayers).fill(0).map((x, i) => i)
+    }
   },
   methods: {
     addLayer: function() {
       this.$store.commit("addLayer")
+    },
+    reorderLayers: function(event) {
+      const o = event.moved.oldIndex
+      const n = event.moved.newIndex
+      let newIndices
+      if (o >= n) {
+        const before = this.indices.slice(0, n)
+        const after = this.indices.slice(o + 1)
+        const between = this.indices.slice(n, o)
+        newIndices = [...before, o, ...between, ...after]
+      } else {
+        const before = this.indices.slice(0, o)
+        const after = this.indices.slice(n + 1)
+        const between = this.indices.slice(o+1, n+1)
+        newIndices = [...before, ...between, o, ...after]
+      }
+      this.$store.commit("reorderLayers", newIndices)
     },
     handleUpload: function() {
       let file = this.$refs.upload.files[0];

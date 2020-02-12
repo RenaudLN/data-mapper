@@ -43,7 +43,7 @@
       <div class="section-title" v-collapse-toggle>Fill</div>
       <div v-collapse-content>
         <span class="form-label">Size</span>
-        <switcher @switch="handleRadiusBase" :initialValue="!fixedRadius" />
+        <switcher :val="!fixedRadius" :value="!fixedRadius" @input="handleRadiusBase"/>
         <vue-slider :min="0" :max="100" v-model="radius" :lazy="true" />
         <template v-if="!fixedRadius">
           <span class="form-label">Size Based On</span>
@@ -64,7 +64,7 @@
             />
         </template>
         <span class="form-label">Color</span>
-        <switcher @switch="fixedFillColor = !$event" :initialValue="!fixedFillColor" />
+        <switcher :val="!fixedFillColor" :value="!fixedFillColor" @input="fixedFillColor = !$event"/>
         <template v-if="fixedFillColor">
           <color-picker :name="'fillColorPicker' + indexLayer" :value="fillColor" @pick-color="fillColor = $event.hex" />
         </template>
@@ -101,7 +101,7 @@
       <div class="section-title" v-collapse-toggle>Outline</div>
       <div v-collapse-content>
         <span class="form-label">Width</span>
-        <switcher @switch="handleWeightBase" :initialValue="!fixedWeight" />
+        <switcher :val="!fixedWeight" :value="!fixedWeight" @input="handleWeightBase"/>
         <vue-slider :min="0" :max="20" :interval="0.2" v-model="weight" :lazy="true" />
         <template v-if="!fixedWeight">
           <span class="form-label">Width Based On</span>
@@ -124,7 +124,7 @@
 
         <template v-if="!fixedWeight || weight > 0">
           <span class="form-label">Color</span>
-          <switcher @switch="fixedColor = !$event" :initialValue="!fixedColor" />
+          <switcher :val="!fixedColor" :value="!fixedColor" @input="fixedColor = !$event"/>
           <template v-if="fixedColor">
             <color-picker :name="'colorPicker' + indexLayer" :value="color" @pick-color="color = $event.hex" />
           </template>

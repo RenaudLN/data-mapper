@@ -89,13 +89,7 @@
           return tf.fill([p.length], l.radius).dataSync()
         } else if (l.radiusBase && d[l.radiusBase]) {
           const t = tf.tensor1d(d[l.radiusBase])
-          const r = tf.add(
-            l.radius[0],
-            tf.mul(
-              l.radius[1] - l.radius[0],
-              tf.sqrt(tf.div(t, t.max()))
-            )
-          ).dataSync()
+          const r = tf.sqrt(t.div(t.max())).mul(l.radius[1] - l.radius[0]).add(l.radius[0]).dataSync()
           return r
         } else {
           return tf.fill([p.length], l.radius[1]).dataSync()

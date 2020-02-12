@@ -2,7 +2,8 @@
   <div class="switch" :style="'float: ' + alignment">
     <label :style="value?'color: #000;':''">
       {{before}}
-      <input type="checkbox" v-model="value" @input="$emit('switch', !value)" />
+      <!-- <input type="checkbox" v-model="value" @input="$emit('switch', !value)" /> -->
+      <input type="checkbox" :value="val" v-model="checked" @change="emitInput" />
       <span class="lever"></span>
       {{after}}
     </label>
@@ -16,13 +17,30 @@ export default {
     alignment: {type: String, default: "right"},
     before: {type: String, default:"Based on Data"},
     after: {type: String, default:""},
-    initialValue: {type: Boolean, default: false},
+    // initialValue: {type: Boolean, default: false},
+    value: {type: Boolean},
+    val: {type: Boolean},
   },
   data () {
     return {
-      value: this.initialValue
+      checkedProxy: false
     }
-  }
+  },
+  computed: {
+    checked: {
+      get () {
+        return this.value
+      },
+      set (val) {
+        this.checkedProxy = val
+      }
+    }
+  },
+  methods: {
+    emitInput: function() {
+      this.$emit('input', this.checkedProxy)
+    }
+  },
 }
 </script>
 
@@ -43,7 +61,11 @@ export default {
     width: 14px !important;
     top: -2px !important;
   }
+  .switch label input[type=checkbox]:checked+.lever {
+    background-color: rgba(var(--theme-color-triplet), 0.3);
+  }
   .switch label input[type=checkbox]:checked+.lever:before, .switch label input[type=checkbox]:checked+.lever:after {
+    background-color: var(--theme-color);
     left: 10px !important;
   }
 </style>

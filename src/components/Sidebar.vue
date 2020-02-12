@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="tab-content">
-        <div :is="activeTab + '-pane'" />
+        <div :is="activeTab + '-pane'" :n-layers="nLayers"/>
         <!-- <layer-options :index-layer="i-1" v-for="i in nLayers" :key="i"/>
         <button id="add-layer" class="btn" @click="addLayer"><span>+</span><span> Add layer</span></button> -->
       </div>
@@ -41,6 +41,11 @@ export default {
       isHidden: false,
       hideButtonText: "<"
     }
+  },
+  computed: {
+    nLayers: function () {
+      return this.$store.state.layers.length
+    },
   },
   methods: {
     toggleSidebar: function() {

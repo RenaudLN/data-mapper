@@ -1,51 +1,54 @@
 <template>
-  <div class="card">
+  <li class="card" is="v-collapse-wrapper" :active="true">
     <div class="card-content">
-      <div class="card-title">
-        <input v-model="name"/>
-        <img src="../assets/visible.svg" />
-        <img src="../assets/delete.svg" @click="removeLayer"/>
+      <div class="card-title" v-collapse-toggle>
+        <span class="handle">⋮⋮</span>
+        <input v-model="name" @click.stop/>
+        <img v-if="visible" src="../assets/visible.svg" @click.stop="visible = !visible"/>
+        <img v-else src="../assets/invisible.svg" @click.stop="visible = !visible"/>
+        <img src="../assets/delete.svg" @click.stop="removeLayer"/>
       </div>
-      <div class="card-section">
-        <div class="section-title">Basic</div>
-        <span class="form-label">Dataset*</span>
-          <multiselect
-            placeholder="Select one..."
-            track-by="name"
-            label="name"
-            :options="datasets"
-            :searchable="false"
-            :allow-empty="false"
-            deselect-label="✓"
-            select-label=""
-            selected-label="✓"
-            :close-on-select="true"
-            :show-labels="true"
-            :value="datasets.find(x => x.name === dataset)"
-            @input="dataset = $event.name"
-          />
-        <!-- <cool-select :items="datasets" v-model="dataset" item-value="name" item-text="name" placeholder="Select one..."/> -->
-        <span class="form-label">Layer Type*</span>
-          <multiselect
-            placeholder="Select one..."
-            track-by="name"
-            label="name"
-            :options="layerTypes"
-            :searchable="false"
-            :allow-empty="false"
-            deselect-label="✓"
-            select-label=""
-            selected-label="✓"
-            :close-on-select="true"
-            :show-labels="true"
-            :value="layerTypes.find(x => x.name === type)"
-            @input="type = $event.name"
-          />
-        <!-- <cool-select :items="layerTypes" v-model="type" item-value="name" item-text="name" placeholder="Select one..."/> -->
+      <div v-collapse-content>
+        <div />
+        <div class="card-section">
+          <div class="section-title">Basic</div>
+          <span class="form-label">Dataset*</span>
+            <multiselect
+              placeholder="Select one..."
+              track-by="name"
+              label="name"
+              :options="datasets"
+              :searchable="false"
+              :allow-empty="false"
+              deselect-label="✓"
+              select-label=""
+              selected-label="✓"
+              :close-on-select="true"
+              :show-labels="true"
+              :value="datasets.find(x => x.name === dataset)"
+              @input="dataset = $event.name"
+            />
+          <span class="form-label">Layer Type*</span>
+            <multiselect
+              placeholder="Select one..."
+              track-by="name"
+              label="name"
+              :options="layerTypes"
+              :searchable="false"
+              :allow-empty="false"
+              deselect-label="✓"
+              select-label=""
+              selected-label="✓"
+              :close-on-select="true"
+              :show-labels="true"
+              :value="layerTypes.find(x => x.name === type)"
+              @input="type = $event.name"
+            />
+        </div>
+        <div :is="type+'-options'" :index-layer="indexLayer"/>
       </div>
-      <div :is="type+'-options'" :index-layer="indexLayer"/>
     </div>
-  </div>
+  </li>
 </template>
 
 <script>
@@ -54,7 +57,7 @@ import GeoPieOptions from "./GeoPieOptions.vue"
 // import { CoolSelect } from "vue-cool-select"
 import Multiselect from 'vue-multiselect'
 
-const computedFields = ["name", "dataset", "type"]
+const computedFields = ["name", "dataset", "type", "visible"]
 
 export default {
   name:"LayerOptions",
@@ -71,6 +74,9 @@ export default {
     }
   },
   computed: {
+    visibleIcon: function() {
+      return this.visible ? "../assets/visible.svg" : "../assets/invisible.svg"
+    },
     datasets: function() {
       return Object.keys(this.$store.state.datasets).map((d) => {return {name: d}})
     },
@@ -92,6 +98,9 @@ export default {
 </script>
 
 <style>
+  .card {
+    margin: 0.5rem 0 !important;
+  }
   span.form-label {
     font-size: 0.75rem;
     /* font-variant: small-caps; */
@@ -112,10 +121,11 @@ export default {
     display: flex !important;
     padding: 0.25em !important;
     margin: 0 !important;
+    position: relative;
   }
   .card-title > input {
-    font-size: 1.25rem !important;
-    height: 1.5rem !important;
+    font-size: 1rem !important;
+    height: 1.2rem !important;
     margin-bottom: 0;
     font-weight: 500 !important;
     flex: 1 1 auto;
@@ -123,6 +133,16 @@ export default {
   }
   .card-title > input:hover {
     background-color: #f0f0f0;
+  }
+  span.handle {
+    color: #000;
+    margin-right: 0.15em;
+    padding: 0 0.1em;
+    cursor: move;
+    font-size: 0.75em;
+  }
+  span.handle:hover {
+    background-color: rgba(0,0,0,0.1);
   }
   input.options-input {
     font-size: 1rem !important;
@@ -151,20 +171,23 @@ export default {
   .card-section {
     padding: 0 0.5em 0.5em 0.5em;
   }
-  .card-section:nth-child(even) {
+  .card-section:nth-child(odd) {
     background-color: #e0e0e0;
   }
-  .card-section:nth-child(odd) {
+  .card-section:nth-child(even) {
     background-color: #fafafa;
   }
   .section-title {
-    color: #009688;
+    color: var(--theme-color);
     font-weight: bold;
     font-variant: small-caps;
     padding-top: 0.25em;
+    position: relative;
   }
   .section-title.v-collapse-toggler {
     cursor: pointer;
+    margin: 0 -0.5em -0.5em -0.5em;
+    padding: 0.25em 0.5em 0.5em 0.5em;
   }
   .section-title.v-collapse-toggler::after {
     font-size: 1rem;
@@ -176,7 +199,8 @@ export default {
     line-height: 25px;
   }
   .section-title.v-collapse-toggler:hover {
-    filter: brightness(0.7);
+    /* filter: brightness(0.7); */
+    background-color: rgba(0,0,0,0.25)
   }
   .section-title+span.form-label {
     margin-top: 0px;

@@ -10,7 +10,7 @@ import {biogas_pies} from './biogas_pies.json'
 
 Vue.config.productionTip = false
 Vue.use(Vuex)
-Vue.use(Popover)
+Vue.use(Popover, { tooltip: true })
 Vue.use(VueCollapse)
 Vue.use(VDialogs, {language: "en"})
 
@@ -27,6 +27,7 @@ const store = new Vuex.Store({
         dataset: "biogas_pies",
         latField: "Latitude",
         lngField: "Longitude",
+        visible: true,
 
         fixedRadius: false,
         radius: [10, 40],
@@ -97,7 +98,10 @@ const store = new Vuex.Store({
     },
     setMapOption (state, payload) {
       state.mapOptions[payload.option] = payload.value
-    }
+    },
+    reorderLayers (state, indices) {
+      state.layers = indices.map(i => state.layers[i])
+    },
   }
 })
 

@@ -5,9 +5,9 @@
     :max-bounds="bounds"
   >
     <l-tile-layer :url="tiles.url" :options="tiles.options"/>
-    <div :is="l.type + '-layer'" :layer="l" :indexLayer="i" v-for="(l, i) in layers" :key="i" />
+    <div :is="l.type + '-layer'" :layer="l" :indexLayer="i" v-for="(l, i) in visibleLayers" :key="i" />
     <l-control :position="'bottomright'">
-      <map-legend :layers="layers"/>
+      <map-legend :layers="visibleLayers"/>
     </l-control>
     <print-control />
   </l-map>
@@ -57,6 +57,9 @@
     computed: {
       layers: function() {
         return this.$store.state.layers
+      },
+      visibleLayers: function() {
+        return this.$store.state.layers.filter(l => l.visible)
       },
       ...computedFields.reduce((a,b)=> (a[b]={
         get: function() {

@@ -2,6 +2,7 @@ const baseLayerDefaults = {
   name: "Point",
   type: "Scatter",
   dataset: null,
+  visible: true,
 
   pieFields: [],
   pieTitle: null,
