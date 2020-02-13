@@ -15,5 +15,20 @@
     <div id="app"></div>
     <!-- built files will be auto injected -->
   </body>
+  <script>
+    (function(){
+      var originalInitTile = L.GridLayer.prototype._initTile
+      L.GridLayer.include({
+          _initTile: function (tile) {
+              originalInitTile.call(this, tile);
+
+              var tileSize = this.getTileSize();
+
+              tile.style.width = tileSize.x + 1 + 'px';
+              tile.style.height = tileSize.y + 1 + 'px';
+          }
+      });
+  })()
+  </script>
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script> -->
 </html>

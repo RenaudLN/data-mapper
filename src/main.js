@@ -79,7 +79,8 @@ const store = new Vuex.Store({
         }
       },
       showLegend: true,
-      
+      showMapLabels: false,
+      showMapRelief: false,
     }
   },
   mutations: {

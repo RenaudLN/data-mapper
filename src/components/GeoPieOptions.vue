@@ -43,7 +43,7 @@
           :options="fields"
           :searchable="false"
           :allow-empty="true"
-          deselect-label="x"
+          deselect-label="×"
           select-label="+"
           selected-label="✓"
           :close-on-select="false"

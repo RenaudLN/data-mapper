@@ -10,7 +10,11 @@
       mapObject: function() {
         const h = window.innerHeight
         const w = window.innerWidth
-        const ratios = [{h:9, w:16, c:"sixteenNinthClass"}, {h:3, w:4, c:"fourThirdClass"}, {h: 1, w: 1, c:"oneOnethClass"}]
+        const ratios = [
+          {h:9, w:16, c:"sixteenNinthClass"},
+          {h:3, w:4, c:"fourThirdClass"},
+          // {h: 1, w: 1, c:"oneOnethClass"},
+        ]
         function getPxHW(r, h, w) {
           if (w / h > r.w / r.h) {
             return {height: h, width: h * r.w / r.h, className: r.c, name: r.w+'/'+r.h}

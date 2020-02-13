@@ -1,7 +1,9 @@
 <template>
   <div>
-    <button @click="$refs.upload.click()" class="btn btn-thin"><span>+</span><span> Add dataset</span></button>
-    <input ref="upload" type="file" @change="handleUpload" style="display: none"/>
+    <div class="add-datasets">
+      <button @click="$refs.upload.click()" class="btn btn-thin"><span>+</span><span> Add dataset</span></button>
+      <input ref="upload" type="file" @change="handleUpload" style="display: none"/>
+    </div>
     <draggable
       class="layers-list"
       tag="ul"
@@ -122,5 +124,9 @@ export default {
   }
   .custom-file-input:active::before {
     background: -webkit-linear-gradient(top, #e3e3e3, #f9f9f9);
+  }
+  .add-datasets {
+    padding-bottom: 1em;
+    border-bottom: 1px solid var(--font-1)
   }
 </style>

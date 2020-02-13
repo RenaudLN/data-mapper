@@ -64,6 +64,10 @@ export default {
     font-size: 1rem !important;
     height: 1.5em !important;
   }
+  input:focus {
+    border-bottom: 2px solid var(--theme-color) !important;
+    box-shadow: none !important;
+  }
   div.IZ-select__item {
     padding: 0 0.5em !important;
   }
@@ -134,6 +138,9 @@ export default {
     height: 100%;
     width: 28px;
   }
+  .multiselect__select::before {
+    border-top-color: var(--font-1)
+  }
   .multiselect * {
     font-size: 1rem;
   }
@@ -161,7 +168,7 @@ export default {
     text-transform: unset;
     font-variant: small-caps;
   }
-  .btn, .btn:hover {
+  .btn, .btn:hover, .btn:focus {
     background-color: var(--theme-color);
   }
   .btn:hover {
@@ -218,6 +225,9 @@ export default {
     top: calc(100% + 6px);
     left: 50%;
     transform: translateX(-50%);
+  }
+  .tooltip.tooltip-large:hover:after {
+    font-size: 1rem;
   }
   @keyframes fadein {
   0% {
